@@ -1,6 +1,14 @@
 _format_version: "3.0"
 
 services:
+  - name: frontend-service
+    url: http://frontend:3000
+    routes:
+      - name: frontend-routes
+        paths:
+          - /
+        strip_path: false
+
   - name: games-service
     url: http://games:4001
     routes:

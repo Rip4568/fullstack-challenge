@@ -9,11 +9,21 @@ import { nitro } from 'nitro/vite'
 
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
+  preview: {
+    host: true,
+  },
   plugins: [
     devtools(),
-    nitro({ rollupConfig: { external: [/^@sentry\//] } }),
     tailwindcss(),
-    tanstackStart(),
+    tanstackStart({
+      spa: {
+        enabled: true,
+        prerender: {
+          enabled: true,
+          crawlLinks: true,
+        },
+      },
+    }),
     viteReact(),
   ],
 })

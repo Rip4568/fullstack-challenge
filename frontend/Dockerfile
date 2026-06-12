@@ -26,6 +26,8 @@ RUN bun install
 
 # Build da aplicação (compila pra produção)
 WORKDIR /app/frontend
+
+# garante usar o runtime do bun pra buildar, evitando problemas de compatibilidade com o node
 RUN bun --bun run build
 
 # ============================================================================
@@ -33,22 +35,15 @@ RUN bun --bun run build
 # ============================================================================
 FROM oven/bun:1
 
-WORKDIR /app
+WORKDIR /app/frontend
 
-# Copia os arquivos compilados e estrutura do frontend
-COPY --from=builder /app/frontend/dist ./frontend/dist
-COPY --from=builder /app/frontend/package.json ./frontend/package.json
+# Nitro gera tudo que é necessário em .output/ — é self-contained
+COPY --from=builder /app/frontend/.output ./.output
 
-# Copia node_modules completo (shared do monorepo)
-COPY --from=builder /app/node_modules ./node_modules
-
-# Copia packages (dependências locais do monorepo)
-COPY --from=builder /app/packages ./packages
-
-# Porta que a aplicação vai escutar
+# Porta que a aplicação vai escutar (Nitro usa NITRO_PORT)
 EXPOSE 3000
 
-# Entra na pasta frontend e inicia servidor estático
-WORKDIR /app/frontend
-COPY --from=builder /app/frontend/server.js ./server.js
-CMD ["bun", "run", "server.js"]
+ENV NITRO_PORT=3000
+ENV NITRO_HOST=0.0.0.0
+
+CMD ["node", ".output/server/index.mjs"]

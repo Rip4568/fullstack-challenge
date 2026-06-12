@@ -9,21 +9,11 @@ import { nitro } from 'nitro/vite'
 
 const config = defineConfig({
   resolve: { tsconfigPaths: true },
-  preview: {
-    host: true,
-  },
   plugins: [
     devtools(),
+    nitro(),
     tailwindcss(),
-    tanstackStart({
-      spa: {
-        enabled: true,
-        prerender: {
-          enabled: true,
-          crawlLinks: true,
-        },
-      },
-    }),
+    tanstackStart(),
     viteReact(),
   ],
 })

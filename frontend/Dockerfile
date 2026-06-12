@@ -27,6 +27,9 @@ RUN bun install
 # Build da aplicação (compila pra produção)
 WORKDIR /app/frontend
 
+# Gera o routeTree antes do build (necessário no ambiente Linux)
+RUN bun --bun run generate-routes
+
 # garante usar o runtime do bun pra buildar, evitando problemas de compatibilidade com o node
 RUN bun --bun run build
 
@@ -35,15 +38,15 @@ RUN bun --bun run build
 # ============================================================================
 FROM oven/bun:1
 
-WORKDIR /app/frontend
+WORKDIR /app
 
-# Nitro gera tudo que é necessário em .output/ — é self-contained
-COPY --from=builder /app/frontend/.output ./.output
+COPY --from=builder /app/frontend/dist ./frontend/dist
+COPY --from=builder /app/frontend/package.json ./frontend/package.json
+COPY --from=builder /app/node_modules ./node_modules
+COPY --from=builder /app/packages ./packages
 
-# Porta que a aplicação vai escutar (Nitro usa NITRO_PORT)
 EXPOSE 3000
 
-ENV NITRO_PORT=3000
-ENV NITRO_HOST=0.0.0.0
-
-CMD ["node", ".output/server/index.mjs"]
+WORKDIR /app/frontend
+COPY --from=builder /app/frontend/server.js ./server.js
+CMD ["bun", "run", "server.js"]

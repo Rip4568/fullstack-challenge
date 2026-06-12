@@ -34,3 +34,22 @@ Puxando uma versão problematica (3.0.1-20260611) que não foi depurada corretam
 "nitro": "^3.0.0"
 
 NOTA IMPORTANTE: com isso fica lição, JAMAIS setar em @latest as versões do Nitro.
+
+----
+
+Durante a fase de build no Docker passei por outro problema como:
+
+frontend-1  | [request error] [unhandled] [GET] http://localhost:3000/
+frontend-1  | Cannot find any route matching [GET] http://localhost:3000/
+
+----
+
+O servidor Nitro subia normalmente dentro do container, recebia as requisições, mas não encontrava nenhum handler registrado — resultando em 500/404 em todas as rotas.
+
+Tentei usar o preset "bun" do Nitro (nitro({ preset: 'bun' })) conforme a documentação oficial do Bun, mas esse preset tem um bug ativo de routing em produção (issue #3475 do TanStack/router). Tentei também o preset padrão "node-server" com node e com bun — mesmo resultado.
+
+Após investigação, concluí que o SSR do TanStack Start em Docker é um bug ativo sem solução definitiva nas versões atuais (junho/2026).
+
+Decisão tomada: como o projeto é um jogo em tempo real com WebSocket e autenticação obrigatória, SSR não agrega valor real (sem SEO, sem crawlers). Optei por rodar em modo SPA com um server.js customizado que serve os arquivos estáticos de dist/client via Bun.serve().
+
+NOTA IMPORTANTE: o TanStack Start em modo SSR com Docker ainda não é confiável para produção. Para projetos que realmente precisam de SSR, aguardar correção oficial ou usar Next.js.

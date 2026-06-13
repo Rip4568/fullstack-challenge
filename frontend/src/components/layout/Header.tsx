@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { gameStore, useGameState } from "../services/store";
+import { authService } from "../../core/auth.service";
+import { gameStore, useGameState } from "../../core/store";
 
 export default function Header() {
 	const state = useGameState();
@@ -130,8 +131,12 @@ export default function Header() {
 						</span>
 						<button
 							onClick={() => {
-								// Clear username mock style
-								gameStore.setState({ username: null, playerId: null });
+								if (state.mode === "real") {
+									authService.clearSession();
+								} else {
+									// Clear username mock style
+									gameStore.setState({ username: null, playerId: null });
+								}
 							}}
 							type="button"
 							className="text-xs hover:bg-surface-variant text-on-surface-variant hover:text-white transition-colors active:scale-95 transition-transform border border-outline-variant px-3 py-2 rounded-lg font-bold cursor-pointer"
@@ -143,10 +148,14 @@ export default function Header() {
 					<div className="flex items-center gap-2">
 						<button
 							onClick={() => {
-								gameStore.setState({
-									username: "GorillaGambler",
-									playerId: "mock-player-id",
-								});
+								if (state.mode === "real") {
+									authService.redirectToLogin();
+								} else {
+									gameStore.setState({
+										username: "GorillaGambler",
+										playerId: "mock-player-id",
+									});
+								}
 							}}
 							type="button"
 							className="hover:bg-surface-variant text-primary font-bold px-4 py-2 rounded-lg active:scale-95 transition-transform cursor-pointer"
@@ -155,10 +164,14 @@ export default function Header() {
 						</button>
 						<button
 							onClick={() => {
-								gameStore.setState({
-									username: "LuckyHunter",
-									playerId: "mock-player-id",
-								});
+								if (state.mode === "real") {
+									authService.redirectToLogin();
+								} else {
+									gameStore.setState({
+										username: "LuckyHunter",
+										playerId: "mock-player-id",
+									});
+								}
 							}}
 							type="button"
 							className="bg-primary text-on-primary px-5 py-2 rounded-lg font-bold active:scale-95 transition-transform neon-btn-glow cursor-pointer"

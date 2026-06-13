@@ -1,0 +1,51 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/infrastructure/persistence/prisma/client"
+}
+
+enum TransactionType {
+  DEBIT
+  CREDIT
+  REFUND
+}
+
+model Wallet {
+  id        String    @id @default(uuid())
+  playerId  String    @unique @map("player_id")
+  balances  Balance[]
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+
+  @@map("wallets")
+}
+
+model Balance {
+  id           String              @id @default(uuid())
+  walletId     String              @map("wallet_id")
+  currency     String              // BRL, USD, BTC, etc.
+  amount       BigInt              @default(0) // Em centavos/Satoshis/Wei
+  wallet       Wallet              @relation(fields: [walletId], references: [id], onDelete: Cascade)
+  transactions WalletTransaction[]
+
+  @@unique([walletId, currency])
+  @@map("balances")
+}
+
+model WalletTransaction {
+  id            String          @id @default(uuid())
+  balanceId     String          @map("balance_id")
+  amount        BigInt          // Negativo para débitos, positivo para créditos
+  type          TransactionType // DEBIT, CREDIT, REFUND
+  referenceType String          @map("reference_type") // BET_PLACEMENT, CASHOUT, REFUND
+  referenceId   String          @map("reference_id")   // ID da aposta no Game Service
+  createdAt     DateTime        @default(now()) @map("created_at")
+  balance       Balance         @relation(fields: [balanceId], references: [id])
+
+  @@unique([referenceId, type]) // Idempotência natural pelo Banco de Dados
+  @@map("wallet_transactions")
+}

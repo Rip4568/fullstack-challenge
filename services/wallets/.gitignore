@@ -17,3 +17,5 @@ bun.lockb
 
 # Logs
 *.log
+
+src/infrastructure/persistence/prisma/client

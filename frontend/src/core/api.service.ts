@@ -1,19 +1,45 @@
+import axios from "axios";
 import { mockEngine } from "./mock-engine";
 import type { Balance, Bet } from "./store";
 import { gameStore } from "./store";
 
 const API_BASE = "http://localhost:8000";
 
-class ApiService {
-	private getHeaders() {
+// Instantiate the custom Axios client
+const apiClient = axios.create({
+	baseURL: API_BASE,
+	timeout: 10000,
+	headers: {
+		"Content-Type": "application/json",
+	},
+});
+
+// Configure Request Interceptors to auto-inject token keys
+apiClient.interceptors.request.use(
+	(config) => {
 		const state = gameStore.getState();
-		const headers: Record<string, string> = {
-			"Content-Type": "application/json",
-		};
-		if (state.token) {
-			headers.Authorization = `Bearer ${state.token}`;
+		if (state.token && config.headers) {
+			config.headers.Authorization = `Bearer ${state.token}`;
 		}
-		return headers;
+		return config;
+	},
+	(error) => {
+		return Promise.reject(error);
+	},
+);
+
+class ApiService {
+	private parseError(err: unknown, defaultMsg: string): Error {
+		if (axios.isAxiosError(err)) {
+			const serverMsg = err.response?.data?.message || err.response?.data;
+			if (serverMsg) {
+				return new Error(
+					typeof serverMsg === "string" ? serverMsg : JSON.stringify(serverMsg),
+				);
+			}
+			return new Error(err.message || defaultMsg);
+		}
+		return err instanceof Error ? err : new Error(defaultMsg);
 	}
 
 	public async getWallet(): Promise<Balance[]> {
@@ -23,20 +49,13 @@ class ApiService {
 		}
 
 		try {
-			const res = await fetch(`${API_BASE}/wallets/me`, {
-				method: "GET",
-				headers: this.getHeaders(),
-			});
-			if (!res.ok) {
-				throw new Error((await res.text()) || "Failed to fetch wallet info");
-			}
-			const data = await res.json();
-			// Ensure we update balances in store
+			const response = await apiClient.get("/wallets/me");
+			const data = response.data;
 			gameStore.setState({ balances: data.balances });
 			return data.balances;
 		} catch (err) {
 			console.error("[ApiService] Error fetching wallet:", err);
-			throw err;
+			throw this.parseError(err, "Failed to fetch wallet info");
 		}
 	}
 
@@ -47,19 +66,13 @@ class ApiService {
 		}
 
 		try {
-			const res = await fetch(`${API_BASE}/wallets`, {
-				method: "POST",
-				headers: this.getHeaders(),
-			});
-			if (!res.ok) {
-				throw new Error((await res.text()) || "Failed to create wallet");
-			}
-			const data = await res.json();
+			const response = await apiClient.post("/wallets");
+			const data = response.data;
 			gameStore.setState({ balances: data.balances });
 			return data.balances;
 		} catch (err) {
 			console.error("[ApiService] Error creating wallet:", err);
-			throw err;
+			throw this.parseError(err, "Failed to create wallet");
 		}
 	}
 
@@ -74,23 +87,8 @@ class ApiService {
 		}
 
 		try {
-			const res = await fetch(`${API_BASE}/games/bet`, {
-				method: "POST",
-				headers: this.getHeaders(),
-				body: JSON.stringify({ amount, currency }),
-			});
-			if (!res.ok) {
-				const errorText = await res.text();
-				let errorMsg = "Failed to place bet";
-				try {
-					const parsed = JSON.parse(errorText);
-					errorMsg = parsed.message || errorMsg;
-				} catch {
-					errorMsg = errorText || errorMsg;
-				}
-				throw new Error(errorMsg);
-			}
-			const bet = await res.json();
+			const response = await apiClient.post("/games/bet", { amount, currency });
+			const bet = response.data;
 
 			// Store autoCashoutMultiplier locally in the bet if provided
 			if (autoCashoutMultiplier) {
@@ -109,7 +107,7 @@ class ApiService {
 			return bet;
 		} catch (err) {
 			console.error("[ApiService] Error placing bet:", err);
-			throw err;
+			throw this.parseError(err, "Failed to place bet");
 		}
 	}
 
@@ -120,23 +118,10 @@ class ApiService {
 		}
 
 		try {
-			const res = await fetch(`${API_BASE}/games/bet/cashout`, {
-				method: "POST",
-				headers: this.getHeaders(),
-				body: JSON.stringify({ multiplier }),
+			const response = await apiClient.post("/games/bet/cashout", {
+				multiplier,
 			});
-			if (!res.ok) {
-				const errorText = await res.text();
-				let errorMsg = "Failed to cashout";
-				try {
-					const parsed = JSON.parse(errorText);
-					errorMsg = parsed.message || errorMsg;
-				} catch {
-					errorMsg = errorText || errorMsg;
-				}
-				throw new Error(errorMsg);
-			}
-			const bet = await res.json();
+			const bet = response.data;
 
 			// Update user bet and active bets list
 			gameStore.setState({
@@ -152,10 +137,11 @@ class ApiService {
 			return bet;
 		} catch (err) {
 			console.error("[ApiService] Error during cashout:", err);
-			throw err;
+			throw this.parseError(err, "Failed to cashout");
 		}
 	}
 
+	// biome-ignore lint/suspicious/noExplicitAny: API response is dynamically typed
 	public async getCurrentRound(): Promise<any> {
 		const state = gameStore.getState();
 		if (state.mode === "mock") {
@@ -163,20 +149,15 @@ class ApiService {
 		}
 
 		try {
-			const res = await fetch(`${API_BASE}/games/rounds/current`, {
-				method: "GET",
-				headers: this.getHeaders(),
-			});
-			if (!res.ok) {
-				throw new Error("Failed to get current round");
-			}
-			return await res.json();
+			const response = await apiClient.get("/games/rounds/current");
+			return response.data;
 		} catch (err) {
 			console.error("[ApiService] Error getting current round:", err);
-			throw err;
+			throw this.parseError(err, "Failed to get current round");
 		}
 	}
 
+	// biome-ignore lint/suspicious/noExplicitAny: API response is dynamically typed
 	public async getRoundsHistory(limit = 20, offset = 0): Promise<any> {
 		const state = gameStore.getState();
 		if (state.mode === "mock") {
@@ -184,36 +165,24 @@ class ApiService {
 		}
 
 		try {
-			const res = await fetch(
-				`${API_BASE}/games/rounds/history?limit=${limit}&offset=${offset}`,
-				{
-					method: "GET",
-					headers: this.getHeaders(),
-				},
+			const response = await apiClient.get(
+				`/games/rounds/history?limit=${limit}&offset=${offset}`,
 			);
-			if (!res.ok) {
-				throw new Error("Failed to get history");
-			}
-			return await res.json();
+			return response.data;
 		} catch (err) {
 			console.error("[ApiService] Error getting rounds history:", err);
-			throw err;
+			throw this.parseError(err, "Failed to get history");
 		}
 	}
 
+	// biome-ignore lint/suspicious/noExplicitAny: API response is dynamically typed
 	public async verifyRound(roundId: string): Promise<any> {
 		try {
-			const res = await fetch(`${API_BASE}/games/rounds/${roundId}/verify`, {
-				method: "GET",
-				headers: this.getHeaders(),
-			});
-			if (!res.ok) {
-				throw new Error("Failed to verify round");
-			}
-			return await res.json();
+			const response = await apiClient.get(`/games/rounds/${roundId}/verify`);
+			return response.data;
 		} catch (err) {
 			console.error("[ApiService] Error verifying round:", err);
-			throw err;
+			throw this.parseError(err, "Failed to verify round");
 		}
 	}
 }

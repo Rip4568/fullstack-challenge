@@ -1,4 +1,4 @@
-import { Controller, Get, Post, UseGuards, Request } from "@nestjs/common";
+import { Controller, Get, Post, UseGuards, Request, Body, BadRequestException } from "@nestjs/common";
 import { HealthCheckResponseDto } from "../dtos/health-check-response.dto";
 import { AuthGuard } from "../guards/auth.guard";
 import { WalletApplicationService } from "../../application/services/wallet.application-service";
@@ -49,4 +49,39 @@ export class WalletsController {
     const wallet = await this.walletService.getOrCreateWallet(req.user.id);
     return WalletResponseDto.fromEntity(wallet);
   }
+
+  @Post("deposit")
+  @UseGuards(AuthGuard)
+  async deposit(
+    @Request() req: any,
+    @Body() body: { amount: string; currency: string }
+  ): Promise<WalletResponseDto> {
+    const { amount, currency } = body;
+    if (!amount || !currency) {
+      throw new BadRequestException("Amount and currency are required");
+    }
+    if (!["BRL", "USD", "BTC", "ETH"].includes(currency)) {
+      throw new BadRequestException("Unsupported currency");
+    }
+    let parsedAmount: bigint;
+    try {
+      parsedAmount = BigInt(amount);
+    } catch {
+      throw new BadRequestException("Invalid amount format");
+    }
+    if (parsedAmount <= 0n) {
+      throw new BadRequestException("Amount must be greater than zero");
+    }
+    const referenceId = `dep_${Date.now()}_${Math.random().toString(36).substring(2, 15)}`;
+    await this.walletService.credit(
+      req.user.id,
+      parsedAmount,
+      currency,
+      referenceId,
+      "SIMULATED_DEPOSIT"
+    );
+    const wallet = await this.walletService.getOrCreateWallet(req.user.id);
+    return WalletResponseDto.fromEntity(wallet);
+  }
 }
+

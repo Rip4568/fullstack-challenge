@@ -17,7 +17,7 @@ Thumbs.db
 
 # IDE
 .idea/
-.vscode/
+#.vscode/ esse projeto usa versão do prisma 6, para não mostrar aquele erro falso positivo na sua IDE deixe configurado assim o .vscode
 *.suo
 *.ntvs*
 *.njsproj

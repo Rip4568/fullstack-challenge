@@ -1,78 +1,173 @@
-import { Link } from '@tanstack/react-router'
-import ThemeToggle from './ThemeToggle'
+import { Link } from "@tanstack/react-router";
+import { useEffect, useRef, useState } from "react";
+import { gameStore, useGameState } from "../services/store";
 
 export default function Header() {
-  return (
-    <header className="sticky top-0 z-50 border-b border-[var(--line)] bg-[var(--header-bg)] px-4 backdrop-blur-lg">
-      <nav className="page-wrap flex flex-wrap items-center gap-x-3 gap-y-2 py-3 sm:py-4">
-        <h2 className="m-0 flex-shrink-0 text-base font-semibold tracking-tight">
-          <Link
-            to="/"
-            className="inline-flex items-center gap-2 rounded-full border border-[var(--chip-line)] bg-[var(--chip-bg)] px-3 py-1.5 text-sm text-[var(--sea-ink)] no-underline shadow-[0_8px_24px_rgba(30,90,72,0.08)] sm:px-4 sm:py-2"
-          >
-            <span className="h-2 w-2 rounded-full bg-[linear-gradient(90deg,#56c6be,#7ed3bf)]" />
-            TanStack Start
-          </Link>
-        </h2>
+	const state = useGameState();
+	const [selectedCurrency, setSelectedCurrency] = useState("BRL");
+	const [dropdownOpen, setDropdownOpen] = useState(false);
+	const dropdownRef = useRef<HTMLDivElement>(null);
 
-        <div className="order-3 flex w-full flex-wrap items-center gap-x-4 gap-y-1 pb-1 text-sm font-semibold sm:order-none sm:w-auto sm:flex-nowrap sm:pb-0">
-          <Link
-            to="/"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            Home
-          </Link>
-          <Link
-            to="/about"
-            className="nav-link"
-            activeProps={{ className: 'nav-link is-active' }}
-          >
-            About
-          </Link>
-          <a
-            href="https://tanstack.com/start/latest/docs/framework/react/overview"
-            className="nav-link"
-            target="_blank"
-            rel="noreferrer"
-          >
-            Docs
-          </a>
-        </div>
+	const activeBalance = state.balances.find(
+		(b) => b.currency === selectedCurrency,
+	);
 
-        <div className="ml-auto flex items-center gap-1.5 sm:gap-2">
-          <a
-            href="https://x.com/tan_stack"
-            target="_blank"
-            rel="noreferrer"
-            className="hidden rounded-xl p-2 text-[var(--sea-ink-soft)] transition hover:bg-[var(--link-bg-hover)] hover:text-[var(--sea-ink)] sm:block"
-          >
-            <span className="sr-only">Follow TanStack on X</span>
-            <svg viewBox="0 0 16 16" aria-hidden="true" width="24" height="24">
-              <path
-                fill="currentColor"
-                d="M12.6 1h2.2L10 6.48 15.64 15h-4.41L7.78 9.82 3.23 15H1l5.14-5.84L.72 1h4.52l3.12 4.73L12.6 1zm-.77 12.67h1.22L4.57 2.26H3.26l8.57 11.41z"
-              />
-            </svg>
-          </a>
-          <a
-            href="https://github.com/TanStack"
-            target="_blank"
-            rel="noreferrer"
-            className="hidden rounded-xl p-2 text-[var(--sea-ink-soft)] transition hover:bg-[var(--link-bg-hover)] hover:text-[var(--sea-ink)] sm:block"
-          >
-            <span className="sr-only">Go to TanStack GitHub</span>
-            <svg viewBox="0 0 16 16" aria-hidden="true" width="24" height="24">
-              <path
-                fill="currentColor"
-                d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"
-              />
-            </svg>
-          </a>
+	const formatBalance = () => {
+		if (!activeBalance) return "R$ 0,00";
+		const val = activeBalance.amountFormatted;
+		if (selectedCurrency === "BRL") {
+			return `R$ ${val.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+		}
+		if (selectedCurrency === "USD") {
+			return `$${val.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+		}
+		return `${val.toFixed(8)} ${selectedCurrency}`;
+	};
 
-          <ThemeToggle />
-        </div>
-      </nav>
-    </header>
-  )
+	// Close dropdown on click outside
+	useEffect(() => {
+		function handleClickOutside(event: MouseEvent) {
+			if (
+				dropdownRef.current &&
+				!dropdownRef.current.contains(event.target as Node)
+			) {
+				setDropdownOpen(false);
+			}
+		}
+		document.addEventListener("mousedown", handleClickOutside);
+		return () => document.removeEventListener("mousedown", handleClickOutside);
+	}, []);
+
+	return (
+		<header className="flex justify-between items-center w-full px-6 py-4 fixed top-0 z-50 bg-surface border-b border-outline-variant glass">
+			<div className="flex items-center gap-4">
+				<Link
+					to="/"
+					className="text-headline-md font-sans font-extrabold text-primary tracking-tighter neon-glow"
+				>
+					Jungle Crash
+				</Link>
+				<div className="hidden md:flex bg-surface-container-lowest rounded-full p-1 ml-6 border border-outline-variant">
+					<button
+						onClick={() => gameStore.setMode("real")}
+						type="button"
+						className={`px-4 py-1 rounded-full text-[10px] font-mono tracking-wider font-bold transition-all cursor-pointer ${
+							state.mode === "real"
+								? "bg-secondary-container text-primary shadow-[0_0_10px_rgba(125,255,103,0.2)]"
+								: "text-on-surface-variant hover:text-white"
+						}`}
+					>
+						Real
+					</button>
+					<button
+						onClick={() => gameStore.setMode("mock")}
+						type="button"
+						className={`px-4 py-1 rounded-full text-[10px] font-mono tracking-wider font-bold transition-all cursor-pointer ${
+							state.mode === "mock"
+								? "bg-secondary-container text-primary shadow-[0_0_10px_rgba(125,255,103,0.2)]"
+								: "text-on-surface-variant hover:text-white"
+						}`}
+					>
+						Mock
+					</button>
+				</div>
+			</div>
+
+			<div className="flex items-center gap-3">
+				{/* Balance Selector Dropdown */}
+				<div className="relative" ref={dropdownRef}>
+					<button
+						onClick={() => setDropdownOpen(!dropdownOpen)}
+						type="button"
+						className="flex items-center gap-2 bg-surface-container-low px-4 py-1.5 rounded-lg border border-outline-variant cursor-pointer active:scale-95 transition-transform hover:border-primary/50"
+					>
+						<span className="material-symbols-outlined text-primary fill">
+							account_balance_wallet
+						</span>
+						<span className="font-mono text-sm text-primary font-bold">
+							{formatBalance()}
+						</span>
+						<span className="material-symbols-outlined text-xs text-on-surface-variant">
+							keyboard_arrow_down
+						</span>
+					</button>
+
+					{dropdownOpen && (
+						<div className="absolute right-0 mt-2 w-48 bg-surface-container rounded-xl border border-outline-variant shadow-2xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
+							{state.balances.map((b) => (
+								<button
+									key={b.currency}
+									onClick={() => {
+										setSelectedCurrency(b.currency);
+										setDropdownOpen(false);
+									}}
+									type="button"
+									className={`w-full text-left px-3 py-2 rounded-lg text-xs font-bold font-mono transition-colors flex justify-between items-center cursor-pointer ${
+										selectedCurrency === b.currency
+											? "bg-secondary-container text-primary"
+											: "text-on-surface hover:bg-surface-container-high"
+									}`}
+								>
+									<span>{b.currency}</span>
+									<span className="opacity-80">
+										{b.currency === "BRL"
+											? `R$ ${b.amountFormatted.toFixed(2)}`
+											: b.currency === "USD"
+												? `$${b.amountFormatted.toFixed(2)}`
+												: b.amountFormatted.toFixed(5)}
+									</span>
+								</button>
+							))}
+						</div>
+					)}
+				</div>
+
+				{/* Auth status or login actions */}
+				{state.username ? (
+					<div className="flex items-center gap-3">
+						<span className="hidden sm:inline text-xs font-mono text-on-surface-variant bg-surface-container px-3 py-1.5 rounded-lg border border-outline-variant">
+							@{state.username}
+						</span>
+						<button
+							onClick={() => {
+								// Clear username mock style
+								gameStore.setState({ username: null, playerId: null });
+							}}
+							type="button"
+							className="text-xs hover:bg-surface-variant text-on-surface-variant hover:text-white transition-colors active:scale-95 transition-transform border border-outline-variant px-3 py-2 rounded-lg font-bold cursor-pointer"
+						>
+							Logout
+						</button>
+					</div>
+				) : (
+					<div className="flex items-center gap-2">
+						<button
+							onClick={() => {
+								gameStore.setState({
+									username: "GorillaGambler",
+									playerId: "mock-player-id",
+								});
+							}}
+							type="button"
+							className="hover:bg-surface-variant text-primary font-bold px-4 py-2 rounded-lg active:scale-95 transition-transform cursor-pointer"
+						>
+							Login
+						</button>
+						<button
+							onClick={() => {
+								gameStore.setState({
+									username: "LuckyHunter",
+									playerId: "mock-player-id",
+								});
+							}}
+							type="button"
+							className="bg-primary text-on-primary px-5 py-2 rounded-lg font-bold active:scale-95 transition-transform neon-btn-glow cursor-pointer"
+						>
+							Sign Up
+						</button>
+					</div>
+				)}
+			</div>
+		</header>
+	);
 }

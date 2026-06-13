@@ -31,3 +31,6 @@ yarn-error.log*
 
 # Test coverage
 coverage/
+
+#arquivos de paginas mock usadao paara encontrar uma melhor versão de UiUx
+pages-mock

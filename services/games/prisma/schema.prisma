@@ -1,0 +1,72 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/infrastructure/persistence/prisma/client"
+}
+
+enum GameStatus {
+  ACTIVE
+  INACTIVE
+}
+
+enum RoundStatus {
+  BETTING
+  GAMEPLAY
+  CRASHED
+}
+
+enum BetStatus {
+  PENDING
+  CONFIRMED
+  CASHOUT
+  LOST
+  REJECTED
+}
+
+model Game {
+  id        String      @id @default(uuid())
+  slug      String      @unique // ex: "crash"
+  name      String
+  status    GameStatus  @default(ACTIVE)
+  rounds    GameRound[]
+  createdAt DateTime    @default(now()) @map("created_at")
+
+  @@map("games")
+}
+
+model GameRound {
+  id             String      @id @default(uuid())
+  gameId         String      @map("game_id")
+  status         RoundStatus
+  serverSeed     String      @map("server_seed")
+  serverSeedHash String      @map("server_seed_hash")
+  clientSeed     String      @map("client_seed")
+  crashPoint     Float       @map("crash_point")
+  createdAt      DateTime    @default(now()) @map("created_at")
+  endedAt        DateTime?   @map("ended_at")
+  game           Game        @relation(fields: [gameId], references: [id])
+  bets           Bet[]
+
+  @@map("game_rounds")
+}
+
+model Bet {
+  id                 String    @id @default(uuid())
+  roundId            String    @map("round_id")
+  playerId           String    @map("player_id")
+  username           String
+  amount             BigInt    // Valor em centavos
+  currency           String    @default("BRL")
+  status             BetStatus
+  cashOutMultiplier  Float?    @map("cashout_multiplier")
+  payoutAmount       BigInt?   @map("payout_amount")
+  createdAt          DateTime  @default(now()) @map("created_at")
+  round              GameRound @relation(fields: [roundId], references: [id])
+
+  @@unique([roundId, playerId]) // Limita a 1 aposta por rodada por jogador
+  @@map("bets")
+}

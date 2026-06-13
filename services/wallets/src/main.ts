@@ -11,6 +11,12 @@ async function bootstrap(): Promise<void> {
   const app = await NestFactory.create(AppModule);
   const port = process.env.PORT || 4002;
 
+  app.enableCors({
+    origin: "*",
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Authorization", "Content-Type"],
+  });
+
   // Connect RabbitMQ microservice
   app.connectMicroservice<MicroserviceOptions>({
     transport: Transport.RMQ,

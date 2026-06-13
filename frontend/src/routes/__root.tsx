@@ -14,7 +14,6 @@ import Sidebar from "../components/layout/Sidebar";
 import { apiService } from "../core/api.service";
 import { authService } from "../core/auth.service";
 import { useGameState } from "../core/store";
-import CommunityChat from "../features/chat/CommunityChat";
 
 import appCss from "../styles.css?url";
 
@@ -36,7 +35,6 @@ export const Route = createRootRoute({
 });
 
 function RootDocument() {
-	const [isChatOpen, setIsChatOpen] = useState(true);
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const state = useGameState();
 
@@ -76,19 +74,6 @@ function RootDocument() {
 						<Outlet />
 					</div>
 				</div>
-
-				{/* Collapsible Community Chat */}
-				{isChatOpen ? (
-					<CommunityChat onClose={() => setIsChatOpen(false)} />
-				) : (
-					<button
-						onClick={() => setIsChatOpen(true)}
-						type="button"
-						className="fixed right-6 bottom-6 lg:bottom-6 w-12 h-12 bg-primary rounded-full flex items-center justify-center text-on-primary shadow-[0_0_20px_rgba(125,255,103,0.5)] active:scale-95 transition-all cursor-pointer z-50"
-					>
-						<span className="material-symbols-outlined fill">chat</span>
-					</button>
-				)}
 
 				{/* Bottom Navigation for Mobile */}
 				<BottomNav

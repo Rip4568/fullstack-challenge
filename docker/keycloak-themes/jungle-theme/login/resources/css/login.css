@@ -1,0 +1,197 @@
+/* Import Google Fonts - Outfit and JetBrains Mono */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+body {
+    background-color: #0F1113 !important;
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(125, 255, 103, 0.05) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(125, 255, 103, 0.05) 0%, transparent 40%) !important;
+    color: #E2E8F0 !important;
+    font-family: 'Outfit', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif !important;
+}
+
+/* Page container */
+.login-pf-page, .login-container {
+    background: transparent !important;
+}
+
+/* Card container */
+.card-pf, #kc-content-wrapper {
+    background-color: #1A1D21 !important;
+    border: 1px solid rgba(125, 255, 103, 0.15) !important;
+    border-radius: 12px !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.5), 0 0 15px rgba(125, 255, 103, 0.05) !important;
+    padding: 32px !important;
+    max-width: 450px !important;
+    margin: 40px auto !important;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.card-pf:hover, #kc-content-wrapper:hover {
+    border-color: rgba(125, 255, 103, 0.3) !important;
+    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.6), 0 0 25px rgba(125, 255, 103, 0.1) !important;
+}
+
+/* Header & Title */
+#kc-header, #kc-header-wrapper {
+    display: none !important; /* Hide keycloak default header if desired, or style it */
+}
+
+#kc-page-title, h1 {
+    color: #FFFFFF !important;
+    font-family: 'Outfit', sans-serif !important;
+    font-weight: 700 !important;
+    font-size: 24px !important;
+    text-align: center !important;
+    margin-bottom: 24px !important;
+    text-transform: uppercase !important;
+    letter-spacing: 1px !important;
+    text-shadow: 0 0 10px rgba(125, 255, 103, 0.2) !important;
+}
+
+/* Labels */
+label, .control-label {
+    color: #94A3B8 !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+    margin-bottom: 8px !important;
+    display: inline-block !important;
+}
+
+/* Form Controls / Inputs */
+input.form-control, 
+input[type="text"], 
+input[type="password"], 
+input[type="email"] {
+    background-color: #0F1113 !important;
+    color: #FFFFFF !important;
+    border: 1px solid #2D3139 !important;
+    border-radius: 8px !important;
+    padding: 12px 16px !important;
+    font-size: 15px !important;
+    font-family: 'Outfit', sans-serif !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
+    transition: all 0.2s ease !important;
+}
+
+input.form-control:focus, 
+input[type="text"]:focus, 
+input[type="password"]:focus, 
+input[type="email"]:focus {
+    border-color: #7DFF67 !important;
+    box-shadow: 0 0 0 2px rgba(125, 255, 103, 0.2), 0 0 10px rgba(125, 255, 103, 0.2) !important;
+    outline: none !important;
+}
+
+/* Buttons */
+.btn-primary, 
+input[type="submit"] {
+    background-color: #7DFF67 !important;
+    background-image: none !important;
+    color: #0F1113 !important;
+    border: none !important;
+    border-radius: 8px !important;
+    padding: 12px 24px !important;
+    font-size: 16px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+    cursor: pointer !important;
+    width: 100% !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    box-shadow: 0 4px 12px rgba(125, 255, 103, 0.2) !important;
+    margin-top: 16px !important;
+}
+
+.btn-primary:hover, 
+input[type="submit"]:hover {
+    background-color: #92FF80 !important;
+    box-shadow: 0 4px 20px rgba(125, 255, 103, 0.4), 0 0 15px rgba(125, 255, 103, 0.3) !important;
+    transform: translateY(-1px) !important;
+}
+
+.btn-primary:active, 
+input[type="submit"]:active {
+    transform: translateY(1px) !important;
+}
+
+/* Links */
+a, a:link, a:visited {
+    color: #7DFF67 !important;
+    text-decoration: none !important;
+    font-weight: 500 !important;
+    transition: color 0.2s ease !important;
+}
+
+a:hover, a:focus {
+    color: #92FF80 !important;
+    text-shadow: 0 0 8px rgba(125, 255, 103, 0.3) !important;
+    text-decoration: underline !important;
+}
+
+/* Checkboxes */
+.checkbox label {
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    cursor: pointer !important;
+}
+
+input[type="checkbox"] {
+    accent-color: #7DFF67 !important;
+}
+
+/* Feedback/Alert Messages */
+.alert {
+    background-color: #1E2022 !important;
+    border-left: 4px solid #EF4444 !important;
+    border-radius: 6px !important;
+    color: #F87171 !important;
+    padding: 12px 16px !important;
+    margin-bottom: 20px !important;
+}
+
+.alert-success {
+    border-left-color: #7DFF67 !important;
+    color: #7DFF67 !important;
+}
+
+/* Helper Text / Register Section */
+#kc-registration, .login-pf-signup {
+    margin-top: 24px !important;
+    text-align: center !important;
+    color: #94A3B8 !important;
+    font-size: 14px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+    padding-top: 16px !important;
+}
+
+/* Social Login */
+#kc-social-providers {
+    margin-top: 24px !important;
+    border-top: 1px solid rgba(255, 255, 255, 0.05) !important;
+    padding-top: 16px !important;
+}
+
+#kc-social-providers ul {
+    list-style: none !important;
+    padding: 0 !important;
+    margin: 0 !important;
+}
+
+.zocial {
+    background-color: #2D3139 !important;
+    border: 1px solid rgba(255, 255, 255, 0.05) !important;
+    color: #FFFFFF !important;
+    border-radius: 8px !important;
+    padding: 10px 16px !important;
+    display: block !important;
+    text-align: center !important;
+    margin-bottom: 8px !important;
+}
+
+.zocial:hover {
+    background-color: #383D47 !important;
+    color: #FFFFFF !important;
+}

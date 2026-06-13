@@ -62,6 +62,26 @@ class AuthService {
 		window.location.href = url;
 	}
 
+	public async redirectToRegister() {
+		const verifier = this.generateRandomString(64);
+		window.localStorage.setItem("pkce_code_verifier", verifier);
+
+		const challenge = await this.generateChallenge(verifier);
+		const redirectUri = `${window.location.origin}/`;
+
+		const url =
+			`${KEYCLOAK_BASE}/auth` +
+			`?client_id=${KEYCLOAK_CLIENT_ID}` +
+			`&redirect_uri=${encodeURIComponent(redirectUri)}` +
+			`&response_type=code` +
+			`&scope=openid` +
+			`&code_challenge=${challenge}` +
+			`&code_challenge_method=S256` +
+			`&kc_action=register`;
+
+		window.location.href = url;
+	}
+
 	public async handleCallback(): Promise<boolean> {
 		const urlParams = new URLSearchParams(window.location.search);
 		const code = urlParams.get("code");
@@ -128,6 +148,7 @@ class AuthService {
 	private saveTokens(tokens: any) {
 		const accessToken = tokens.access_token;
 		const refreshToken = tokens.refresh_token;
+		const idToken = tokens.id_token;
 
 		const payload = this.decodeJwt(accessToken);
 		if (!payload) return;
@@ -139,6 +160,7 @@ class AuthService {
 		window.localStorage.setItem("auth_refresh_token", refreshToken);
 		window.localStorage.setItem("auth_username", username);
 		window.localStorage.setItem("auth_player_id", playerId);
+		if (idToken) window.localStorage.setItem("auth_id_token", idToken);
 
 		gameStore.setState({
 			token: accessToken,
@@ -203,6 +225,7 @@ class AuthService {
 		window.localStorage.removeItem("auth_refresh_token");
 		window.localStorage.removeItem("auth_username");
 		window.localStorage.removeItem("auth_player_id");
+		window.localStorage.removeItem("auth_id_token");
 
 		gameStore.setState({
 			token: null,
@@ -210,6 +233,17 @@ class AuthService {
 			playerId: null,
 			balances: [],
 		});
+	}
+
+	public logout() {
+		const idToken = window.localStorage.getItem("auth_id_token");
+		this.clearSession();
+
+		const redirectUri = encodeURIComponent(`${window.location.origin}/`);
+		let logoutUrl = `${KEYCLOAK_BASE}/logout?client_id=${KEYCLOAK_CLIENT_ID}&post_logout_redirect_uri=${redirectUri}`;
+		if (idToken) logoutUrl += `&id_token_hint=${encodeURIComponent(idToken)}`;
+
+		window.location.href = logoutUrl;
 	}
 }
 

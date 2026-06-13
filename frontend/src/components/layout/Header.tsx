@@ -108,9 +108,8 @@ export default function Header() {
 						<button
 							onClick={() => {
 								if (state.mode === "real") {
-									authService.clearSession();
+									authService.logout();
 								} else {
-									// Clear username mock style
 									gameStore.setState({ username: null, playerId: null });
 								}
 							}}
@@ -141,7 +140,7 @@ export default function Header() {
 						<button
 							onClick={() => {
 								if (state.mode === "real") {
-									authService.redirectToLogin();
+									authService.redirectToRegister();
 								} else {
 									gameStore.setState({
 										username: "LuckyHunter",

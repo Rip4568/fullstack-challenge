@@ -104,30 +104,30 @@ export function Lobby() {
 						<span className="material-symbols-outlined text-3xl">casino</span>
 					</div>
 					<h3 className="text-lg font-bold text-white z-10">Crash Game</h3>
+					{/* Airplane background — rotated 45° climbing to top-right */}
 					<svg
-						viewBox="0 0 24 24"
+						viewBox="0 0 120 120"
 						fill="none"
-						stroke="currentColor"
-						strokeWidth="1.5"
-						strokeLinecap="round"
-						strokeLinejoin="round"
-						className="absolute -bottom-2 -right-2 w-32 h-32 text-primary/10 group-hover:text-primary/30 group-hover:scale-125 group-hover:-translate-y-4 group-hover:translate-x-2 transition-all duration-500 ease-out pointer-events-none"
+						xmlns="http://www.w3.org/2000/svg"
+						className="absolute -bottom-4 -right-4 w-36 h-36 text-primary/15 group-hover:text-primary/40 -rotate-[35deg] group-hover:scale-110 group-hover:-translate-y-3 group-hover:translate-x-1 transition-all duration-500 ease-out pointer-events-none"
 					>
-						<title>Crash Game Rocket Jet</title>
-						<path d="M4.5 16.5c-1.5 1.5-2.5 3.5-2.5 5.5 2-.005 4-1 5.5-2.5" />
-						<path d="M12 4.5l9 9-5 5-9-9 5-5z" />
-						<path d="M9 15l-3 3-2-2 3-3" />
-						<path d="M15 9l-3 3-2-2 3-3" />
-						<path d="M13.5 6.5l4 4" />
-						<path
-							d="M18.5 2.5a2.121 2.121 0 0 1 3 3L17 10 14 7l4.5-4.5z"
-							strokeWidth="2"
-							fill="currentColor"
-							opacity="0.2"
-						/>
-						<circle cx="5" cy="19" r="1" />
-						<circle cx="8" cy="21" r="0.7" />
-						<circle cx="3" cy="16" r="0.7" />
+						<title>Crash Game Airplane</title>
+						{/* Fuselage */}
+						<ellipse cx="60" cy="60" rx="40" ry="10" fill="currentColor" />
+						{/* Nose */}
+						<path d="M100 60 Q115 60 108 54 L100 50Z" fill="currentColor" />
+						{/* Main wings */}
+						<path d="M65 60 L80 30 L90 35 L75 60Z" fill="currentColor" />
+						<path d="M65 60 L80 90 L90 85 L75 60Z" fill="currentColor" />
+						{/* Tail fin (vertical) */}
+						<path d="M22 60 L15 40 L30 52Z" fill="currentColor" />
+						{/* Tail wings (horizontal) */}
+						<path d="M25 60 L18 45 L32 55Z" fill="currentColor" opacity="0.6" />
+						<path d="M25 60 L18 75 L32 65Z" fill="currentColor" opacity="0.6" />
+						{/* Engine trail dots */}
+						<circle cx="14" cy="60" r="2.5" fill="currentColor" opacity="0.5" />
+						<circle cx="6" cy="60" r="1.8" fill="currentColor" opacity="0.3" />
+						<circle cx="0" cy="60" r="1" fill="currentColor" opacity="0.15" />
 					</svg>
 				</Link>
 

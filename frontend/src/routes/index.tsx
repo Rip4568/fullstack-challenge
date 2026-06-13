@@ -10,8 +10,7 @@ export function Lobby() {
 			provider: "PRAGMATIC PLAY",
 			badge: "POPULAR",
 			badgeColor: "bg-primary/20 text-primary border-primary/30",
-			image:
-				"https://lh3.googleusercontent.com/aida-public/AB6AXuDT1FvMhLpA-vQpS4hN9vNnC4tTz1vU7o7d1u7mC1n9v0rX1Z1g1l1z1b1f1g1h1i1j1k1l1m1n1o1p1q1r1s1t1u1v1w1x1y1z", // Fallback or standard mockup source
+			image: "/sweet_craze_cover.png",
 		},
 		{
 			id: "bloody-dawn",
@@ -83,16 +82,14 @@ export function Lobby() {
 							<br />+ EXCLUSIVE REWARDS
 						</h2>
 						<p className="text-on-surface-variant text-sm mb-6 max-w-xs">
-							Earn ongoing cash commissions by inviting friends to join the
-							jungle!
+							Earn ongoing commissions by inviting friends to join the Jungle!
 						</p>
-						<button
-							onClick={() => {}}
-							type="button"
-							className="bg-primary text-on-primary text-xs w-fit px-6 py-3 rounded-lg font-bold neon-btn-glow active:scale-95 transition-all text-center cursor-pointer"
+						<Link
+							to="/profile"
+							className="bg-primary text-on-primary text-xs w-fit px-6 py-3 rounded-lg font-bold neon-btn-glow active:scale-95 transition-all text-center"
 						>
 							Invite Friends
-						</button>
+						</Link>
 					</div>
 				</div>
 			</section>
@@ -101,52 +98,195 @@ export function Lobby() {
 			<section className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
 				<Link
 					to="/play/crash"
-					className="bg-surface-container rounded-2xl p-6 border border-outline-variant hover:border-primary/50 cursor-pointer transition-all flex flex-col gap-4 relative overflow-hidden group"
+					className="bg-gradient-to-br from-emerald-950/30 via-surface-container to-surface-container-lowest rounded-2xl p-6 border border-emerald-500/20 hover:border-primary/60 hover:shadow-[0_0_25px_rgba(125,255,103,0.25)] shadow-md cursor-pointer transition-all duration-300 flex flex-col gap-4 relative overflow-hidden group"
 				>
-					<div className="bg-primary/10 w-12 h-12 rounded-xl flex items-center justify-center text-primary">
+					<div className="bg-primary/10 w-12 h-12 rounded-xl flex items-center justify-center text-primary group-hover:bg-primary group-hover:text-on-primary transition-all duration-300 z-10">
 						<span className="material-symbols-outlined text-3xl">casino</span>
 					</div>
-					<h3 className="text-lg font-bold text-white">Crash Game</h3>
-					<span className="material-symbols-outlined absolute -bottom-4 -right-4 text-8xl text-primary/5 group-hover:scale-110 transition-transform">
-						rocket_launch
-					</span>
+					<h3 className="text-lg font-bold text-white z-10">Crash Game</h3>
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="1.5"
+						strokeLinecap="round"
+						strokeLinejoin="round"
+						className="absolute -bottom-2 -right-2 w-32 h-32 text-primary/10 group-hover:text-primary/30 group-hover:scale-125 group-hover:-translate-y-4 group-hover:translate-x-2 transition-all duration-500 ease-out pointer-events-none"
+					>
+						<title>Crash Game Rocket Jet</title>
+						<path d="M4.5 16.5c-1.5 1.5-2.5 3.5-2.5 5.5 2-.005 4-1 5.5-2.5" />
+						<path d="M12 4.5l9 9-5 5-9-9 5-5z" />
+						<path d="M9 15l-3 3-2-2 3-3" />
+						<path d="M15 9l-3 3-2-2 3-3" />
+						<path d="M13.5 6.5l4 4" />
+						<path
+							d="M18.5 2.5a2.121 2.121 0 0 1 3 3L17 10 14 7l4.5-4.5z"
+							strokeWidth="2"
+							fill="currentColor"
+							opacity="0.2"
+						/>
+						<circle cx="5" cy="19" r="1" />
+						<circle cx="8" cy="21" r="0.7" />
+						<circle cx="3" cy="16" r="0.7" />
+					</svg>
 				</Link>
 
-				<div className="bg-surface-container rounded-2xl p-6 border border-outline-variant hover:border-primary/50 cursor-pointer transition-all flex flex-col gap-4 relative overflow-hidden group">
-					<div className="bg-primary/10 w-12 h-12 rounded-xl flex items-center justify-center text-primary">
+				<div className="bg-gradient-to-br from-cyan-950/30 via-surface-container to-surface-container-lowest rounded-2xl p-6 border border-cyan-500/20 hover:border-cyan-400/60 hover:shadow-[0_0_25px_rgba(0,243,255,0.25)] shadow-md cursor-pointer transition-all duration-300 flex flex-col gap-4 relative overflow-hidden group">
+					<div className="bg-cyan-500/10 w-12 h-12 rounded-xl flex items-center justify-center text-cyan-400 group-hover:bg-cyan-400 group-hover:text-black transition-all duration-300 z-10">
 						<span className="material-symbols-outlined text-3xl">
 							sports_soccer
 						</span>
 					</div>
-					<h3 className="text-lg font-bold text-white">Sportsbook</h3>
-					<span className="material-symbols-outlined absolute -bottom-4 -right-4 text-8xl text-primary/5 group-hover:scale-110 transition-transform">
-						sports_soccer
-					</span>
+					<h3 className="text-lg font-bold text-white z-10">Sportsbook</h3>
+					<svg
+						viewBox="0 0 100 100"
+						preserveAspectRatio="none"
+						className="absolute inset-0 w-full h-full text-cyan-500/5 group-hover:text-cyan-500/15 group-hover:scale-105 transition-all duration-500 ease-out pointer-events-none"
+					>
+						<title>Sportsbook Reticular Grid</title>
+						<defs>
+							<pattern
+								id="sports-grid"
+								width="10"
+								height="10"
+								patternUnits="userSpaceOnUse"
+							>
+								<path
+									d="M 10 0 L 0 0 0 10"
+									fill="none"
+									stroke="currentColor"
+									strokeWidth="0.5"
+								/>
+							</pattern>
+						</defs>
+						<rect width="100" height="100" fill="url(#sports-grid)" />
+						<path
+							d="M -10,90 C 20,60 40,80 80,30 L 95,45"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="1"
+							strokeDasharray="2,2"
+							className="text-cyan-400/20 group-hover:text-cyan-400/40 transition-colors"
+						/>
+						<circle
+							cx="80"
+							cy="30"
+							r="3"
+							fill="currentColor"
+							className="text-cyan-400/30 group-hover:text-cyan-400/60 transition-colors"
+						/>
+					</svg>
 				</div>
 
-				<div className="bg-surface-container rounded-2xl p-6 border border-outline-variant hover:border-primary/50 cursor-pointer transition-all flex flex-col gap-4 relative overflow-hidden group">
-					<div className="bg-primary/10 w-12 h-12 rounded-xl flex items-center justify-center text-primary">
+				<div className="bg-gradient-to-br from-pink-950/30 via-surface-container to-surface-container-lowest rounded-2xl p-6 border border-pink-500/20 hover:border-pink-400/60 hover:shadow-[0_0_25px_rgba(255,0,127,0.25)] shadow-md cursor-pointer transition-all duration-300 flex flex-col gap-4 relative overflow-hidden group">
+					<div className="bg-pink-500/10 w-12 h-12 rounded-xl flex items-center justify-center text-pink-400 group-hover:bg-pink-400 group-hover:text-black transition-all duration-300 z-10">
 						<span className="material-symbols-outlined text-3xl">
 							confirmation_number
 						</span>
 					</div>
-					<h3 className="text-lg font-bold text-white">Lotteries</h3>
-					<span className="material-symbols-outlined absolute -bottom-4 -right-4 text-8xl text-primary/5 group-hover:scale-110 transition-transform">
-						local_activity
-					</span>
+					<h3 className="text-lg font-bold text-white z-10">Lotteries</h3>
+					<svg
+						viewBox="0 0 100 100"
+						className="absolute -bottom-6 -right-6 w-36 h-36 text-pink-500/10 group-hover:text-pink-500/25 group-hover:rotate-45 group-hover:scale-110 transition-all duration-700 ease-out pointer-events-none"
+					>
+						<title>Lotteries Concentric Circles</title>
+						<circle
+							cx="50"
+							cy="50"
+							r="45"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="1"
+							strokeDasharray="5,5"
+						/>
+						<circle
+							cx="50"
+							cy="50"
+							r="35"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="1.5"
+							strokeDasharray="15,10"
+						/>
+						<circle
+							cx="50"
+							cy="50"
+							r="25"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="2"
+							strokeDasharray="4,2"
+						/>
+						<circle
+							cx="50"
+							cy="50"
+							r="15"
+							fill="none"
+							stroke="currentColor"
+							strokeWidth="1"
+							strokeDasharray="40,5"
+						/>
+						<line
+							x1="50"
+							y1="2"
+							x2="50"
+							y2="8"
+							stroke="currentColor"
+							strokeWidth="1"
+						/>
+						<line
+							x1="50"
+							y1="92"
+							x2="50"
+							y2="98"
+							stroke="currentColor"
+							strokeWidth="1"
+						/>
+						<line
+							x1="2"
+							y1="50"
+							x2="8"
+							y2="50"
+							stroke="currentColor"
+							strokeWidth="1"
+						/>
+						<line
+							x1="92"
+							y1="50"
+							x2="98"
+							y2="50"
+							stroke="currentColor"
+							strokeWidth="1"
+						/>
+					</svg>
 				</div>
 
 				<Link
 					to="/profile"
-					className="bg-surface-container rounded-2xl p-6 border border-outline-variant hover:border-primary/50 cursor-pointer transition-all flex flex-col gap-4 relative overflow-hidden group"
+					className="bg-gradient-to-br from-amber-950/30 via-surface-container to-surface-container-lowest rounded-2xl p-6 border border-amber-500/20 hover:border-amber-400/60 hover:shadow-[0_0_25px_rgba(255,170,0,0.25)] shadow-md cursor-pointer transition-all duration-300 flex flex-col gap-4 relative overflow-hidden group"
 				>
-					<div className="bg-primary/10 w-12 h-12 rounded-xl flex items-center justify-center text-primary">
+					<div className="bg-amber-500/10 w-12 h-12 rounded-xl flex items-center justify-center text-amber-400 group-hover:bg-amber-400 group-hover:text-black transition-all duration-300 z-10">
 						<span className="material-symbols-outlined text-3xl">campaign</span>
 					</div>
-					<h3 className="text-lg font-bold text-white">VIP Club</h3>
-					<span className="material-symbols-outlined absolute -bottom-4 -right-4 text-8xl text-primary/5 group-hover:scale-110 transition-transform">
-						military_tech
-					</span>
+					<h3 className="text-lg font-bold text-white z-10">VIP Club</h3>
+					<svg
+						viewBox="0 0 100 100"
+						fill="none"
+						stroke="currentColor"
+						strokeWidth="1"
+						className="absolute -bottom-4 -right-4 w-32 h-32 text-amber-500/10 group-hover:text-amber-500/25 group-hover:scale-115 group-hover:rotate-12 transition-all duration-500 ease-out pointer-events-none"
+					>
+						<title>VIP Club Diamond Pattern</title>
+						<path d="M 50,10 L 90,40 L 50,90 L 10,40 Z" />
+						<path d="M 50,10 L 50,90" />
+						<path d="M 10,40 L 90,40" />
+						<path d="M 50,10 L 30,40 L 50,90 L 70,40 Z" />
+						<path d="M 30,40 L 50,40 M 70,40 L 50,40" />
+						<circle cx="50" cy="10" r="2" fill="currentColor" />
+						<circle cx="90" cy="40" r="2" fill="currentColor" />
+						<circle cx="50" cy="90" r="2" fill="currentColor" />
+						<circle cx="10" cy="40" r="2" fill="currentColor" />
+					</svg>
 				</Link>
 			</section>
 
@@ -192,8 +332,18 @@ export function Lobby() {
 						</div>
 					</Link>
 
-					{/* Simple Secondary Original: Mines */}
-					<div className="relative rounded-2xl border border-outline-variant bg-surface-container overflow-hidden h-72 flex flex-col group justify-between p-6 hover:border-primary/50 transition-all">
+					{/* Simple Secondary Original: Mines (SOON) */}
+					<div className="relative rounded-2xl border border-outline-variant bg-surface-container overflow-hidden h-72 flex flex-col justify-between p-6 group">
+						{/* Soon Lock Overlay */}
+						<div className="absolute inset-0 bg-black/75 backdrop-blur-[2px] flex flex-col items-center justify-center gap-2 z-10">
+							<span className="bg-amber-500/20 border border-amber-500/30 text-amber-400 font-mono text-xs font-black px-3 py-1 rounded shadow-[0_0_12px_rgba(245,158,11,0.25)]">
+								SOON
+							</span>
+							<span className="text-[10px] font-sans font-bold text-on-surface-variant/70 tracking-wider uppercase">
+								Under Development
+							</span>
+						</div>
+
 						<span className="text-[10px] font-bold text-on-surface-variant bg-surface-container-highest px-2 py-0.5 rounded w-fit">
 							MULTIPLIER GAME
 						</span>
@@ -204,12 +354,13 @@ export function Lobby() {
 								payout multiplier.
 							</p>
 						</div>
-						<Link
-							to="/play/crash"
-							className="mt-6 border border-outline-variant text-on-surface text-xs font-bold py-2.5 px-4 rounded-lg w-full text-center hover:bg-surface-container-high transition-colors"
+						<button
+							type="button"
+							disabled
+							className="mt-6 border border-outline-variant/30 text-on-surface-variant/40 text-xs font-bold py-2.5 px-4 rounded-lg w-full text-center"
 						>
 							Configure Mines
-						</Link>
+						</button>
 					</div>
 				</div>
 			</section>
@@ -229,12 +380,22 @@ export function Lobby() {
 					{popularGames.map((game) => (
 						<div
 							key={game.id}
-							className="bg-surface-container rounded-2xl overflow-hidden border border-outline-variant group hover:border-primary/30 transition-all flex flex-col"
+							className="bg-surface-container rounded-2xl overflow-hidden border border-outline-variant group transition-all flex flex-col relative"
 						>
+							{/* Blocked Soon Overlay */}
+							<div className="absolute inset-0 bg-black/75 backdrop-blur-[2.5px] rounded-2xl flex flex-col items-center justify-center gap-1.5 z-20">
+								<span className="bg-amber-500/20 border border-amber-500/30 text-amber-400 font-mono text-[10px] font-bold px-2.5 py-0.5 rounded shadow-[0_0_10px_rgba(245,158,11,0.2)]">
+									SOON
+								</span>
+								<span className="text-[9px] font-sans font-bold text-on-surface-variant/60 tracking-widest uppercase">
+									Coming Soon
+								</span>
+							</div>
+
 							<div className="aspect-[3/4] overflow-hidden relative bg-surface-container-lowest">
 								{game.image ? (
 									<img
-										className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+										className="w-full h-full object-cover"
 										alt={game.title}
 										src={game.image}
 									/>
@@ -245,15 +406,6 @@ export function Lobby() {
 										</span>
 									</div>
 								)}
-								{/* Play Button Overlay */}
-								<div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center z-10">
-									<Link
-										to="/play/crash"
-										className="material-symbols-outlined text-primary text-5xl cursor-pointer hover:scale-105 transition-transform"
-									>
-										play_circle
-									</Link>
-								</div>
 								{/* Badge */}
 								<span
 									className={`absolute top-2 left-2 text-[8px] font-bold px-2 py-0.5 rounded border ${game.badgeColor}`}
@@ -261,7 +413,7 @@ export function Lobby() {
 									{game.badge}
 								</span>
 							</div>
-							<div className="p-3 text-center">
+							<div className="p-3 text-center z-10 bg-surface-container">
 								<p className="font-bold text-xs text-on-surface tracking-tight truncate">
 									{game.title}
 								</p>

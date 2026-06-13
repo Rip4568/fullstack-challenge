@@ -76,10 +76,7 @@ const DEFAULT_BALANCES: Balance[] = [
 	},
 ];
 
-const initialMode =
-	(typeof window !== "undefined" &&
-		(window.localStorage.getItem("game_mode") as "mock" | "real")) ||
-	"mock";
+const initialMode = "real";
 
 const initialHistory = [
 	{

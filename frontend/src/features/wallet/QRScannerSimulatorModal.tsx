@@ -1,6 +1,6 @@
 import { Camera, CheckCircle, RefreshCw, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { gameStore } from "../../core/store";
+import { apiService } from "../../core/api.service";
 
 interface QRScannerSimulatorModalProps {
 	isOpen: boolean;
@@ -64,7 +64,9 @@ const QRScannerSimulatorModal = ({
 				mockIncrement = 50000000000000000; // 0.05 ETH
 			}
 
-			gameStore.updateBalance(selectedAsset, mockIncrement);
+			apiService.deposit(selectedAsset, mockIncrement).catch((err) => {
+				console.error("Failed to deposit simulated funds:", err);
+			});
 		}, 3800);
 
 		// Auto close scanner after 5.5s

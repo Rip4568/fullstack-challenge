@@ -48,30 +48,6 @@ export default function Header() {
 				>
 					Jungle Crash
 				</Link>
-				<div className="hidden md:flex bg-surface-container-lowest rounded-full p-1 ml-6 border border-outline-variant">
-					<button
-						onClick={() => gameStore.setMode("real")}
-						type="button"
-						className={`px-4 py-1 rounded-full text-[10px] font-mono tracking-wider font-bold transition-all cursor-pointer ${
-							state.mode === "real"
-								? "bg-secondary-container text-primary shadow-[0_0_10px_rgba(125,255,103,0.2)]"
-								: "text-on-surface-variant hover:text-white"
-						}`}
-					>
-						Real
-					</button>
-					<button
-						onClick={() => gameStore.setMode("mock")}
-						type="button"
-						className={`px-4 py-1 rounded-full text-[10px] font-mono tracking-wider font-bold transition-all cursor-pointer ${
-							state.mode === "mock"
-								? "bg-secondary-container text-primary shadow-[0_0_10px_rgba(125,255,103,0.2)]"
-								: "text-on-surface-variant hover:text-white"
-						}`}
-					>
-						Mock
-					</button>
-				</div>
 			</div>
 
 			<div className="flex items-center gap-3">

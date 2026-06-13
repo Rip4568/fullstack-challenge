@@ -76,6 +76,28 @@ class ApiService {
 		}
 	}
 
+	// biome-ignore lint/suspicious/noExplicitAny: API response is dynamically typed
+	public async deposit(currency: string, amount: number): Promise<any> {
+		const state = gameStore.getState();
+		if (state.mode === "mock") {
+			gameStore.updateBalance(currency, amount);
+			return;
+		}
+
+		try {
+			const response = await apiClient.post("/wallets/deposit", {
+				amount: amount.toString(),
+				currency,
+			});
+			const data = response.data;
+			gameStore.setState({ balances: data.balances });
+			return data;
+		} catch (err) {
+			console.error("[ApiService] Error depositing:", err);
+			throw this.parseError(err, "Failed to deposit funds");
+		}
+	}
+
 	public async placeBet(
 		amount: number,
 		currency: string,

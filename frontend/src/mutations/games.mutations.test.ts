@@ -23,10 +23,13 @@ vi.mock("../core/store", () => ({
 		})),
 		setState: vi.fn(),
 		updateBalance: vi.fn(),
+		addToast: vi.fn(),
+		removeToast: vi.fn(),
 	},
 }));
 
 import { apiClient } from "../core/apiClient";
+import type { Bet, GameState } from "../core/store";
 import { gameStore } from "../core/store";
 import { cashoutFn } from "./games.mutations";
 
@@ -49,8 +52,8 @@ describe("cashoutFn()", () => {
 		vi.clearAllMocks();
 		vi.mocked(gameStore.getState).mockReturnValue({
 			playerId: "player-1",
-			activeBets: [{ playerId: "player-1" }] as any,
-		} as any);
+			activeBets: [{ playerId: "player-1" }] as unknown as Bet[],
+		} as unknown as GameState);
 	});
 
 	it("posts to /games/bet/cashout with the given multiplier", async () => {

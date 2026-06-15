@@ -133,6 +133,10 @@ class AuthService {
 
 			// Clean query params from URL
 			window.history.replaceState({}, document.title, window.location.pathname);
+			gameStore.addToast({
+				type: "success",
+				message: "Login efetuado com sucesso! Bem-vindo de volta.",
+			});
 			return true;
 		} catch (err) {
 			console.error("[AuthService] Error exchanging code for tokens:", err);
@@ -194,6 +198,10 @@ class AuthService {
 					token,
 					username,
 					playerId,
+				});
+				gameStore.addToast({
+					type: "info",
+					message: "Sessão ativa encontrada.",
 				});
 				return true;
 			}

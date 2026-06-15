@@ -33,6 +33,8 @@ vi.mock("../core/store", () => ({
 		getState: vi.fn(() => ({ mode: mockMode, balances: mockBalances })),
 		setState: vi.fn(),
 		updateBalance: vi.fn(),
+		addToast: vi.fn(),
+		removeToast: vi.fn(),
 	},
 }));
 

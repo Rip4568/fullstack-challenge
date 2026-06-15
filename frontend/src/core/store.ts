@@ -22,6 +22,13 @@ export interface Balance {
 	estimatedUsdValue: number;
 }
 
+export interface Toast {
+	id: string;
+	type: "success" | "error" | "info" | "warning";
+	message: string;
+	duration?: number;
+}
+
 export interface GameState {
 	mode: "mock" | "real";
 	roundState: "BETTING" | "GAMEPLAY" | "CRASHED";
@@ -48,6 +55,7 @@ export interface GameState {
 	token: string | null;
 	error: string | null;
 	isConnected: boolean;
+	toasts: Toast[];
 }
 
 const DEFAULT_BALANCES: Balance[] = [
@@ -159,6 +167,7 @@ let state: GameState = {
 	token: null,
 	error: null,
 	isConnected: false,
+	toasts: [],
 };
 
 // Subscriptions
@@ -257,6 +266,29 @@ export const gameStore = {
 		});
 
 		this.setState({ balances: updatedBalances });
+	},
+
+	addToast(toast: Omit<Toast, "id"> & { id?: string }) {
+		const id = toast.id || Math.random().toString(36).substring(2, 9);
+		const duration = toast.duration ?? 5000;
+		const newToast: Toast = { ...toast, id, duration };
+
+		this.setState((prev) => ({
+			toasts: [...prev.toasts, newToast],
+		}));
+
+		if (duration > 0) {
+			setTimeout(() => {
+				this.removeToast(id);
+			}, duration);
+		}
+		return id;
+	},
+
+	removeToast(id: string) {
+		this.setState((prev) => ({
+			toasts: prev.toasts.filter((t) => t.id !== id),
+		}));
 	},
 };
 

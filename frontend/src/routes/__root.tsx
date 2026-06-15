@@ -139,6 +139,48 @@ function AppShell() {
 				</div>
 			)}
 
+			{/* Toast Container */}
+			<div className="fixed top-4 right-4 z-[9999] flex flex-col gap-2 max-w-sm w-full pointer-events-none">
+				{state.toasts.map((toast) => (
+					<div
+						key={toast.id}
+						className={`pointer-events-auto flex items-start justify-between p-4 rounded-lg shadow-lg border transition-all duration-300 ${
+							toast.type === "success"
+								? "bg-emerald-950/95 text-emerald-100 border-emerald-500/50"
+								: toast.type === "error"
+									? "bg-rose-950/95 text-rose-100 border-rose-500/50"
+									: toast.type === "warning"
+										? "bg-amber-950/95 text-amber-100 border-amber-500/50"
+										: "bg-blue-950/95 text-blue-100 border-blue-500/50"
+						}`}
+					>
+						<div className="flex items-start gap-3">
+							<span className="material-symbols-outlined select-none mt-0.5">
+								{toast.type === "success"
+									? "check_circle"
+									: toast.type === "error"
+										? "error"
+										: toast.type === "warning"
+											? "warning"
+											: "info"}
+							</span>
+							<p className="text-sm font-medium whitespace-pre-line leading-relaxed">
+								{toast.message}
+							</p>
+						</div>
+						<button
+							onClick={() => gameStore.removeToast(toast.id)}
+							type="button"
+							className="ml-3 text-on-surface-variant hover:text-white transition-colors"
+						>
+							<span className="material-symbols-outlined text-base select-none">
+								close
+							</span>
+						</button>
+					</div>
+				))}
+			</div>
+
 			<TanStackDevtools
 				config={{ position: "bottom-right" }}
 				plugins={[

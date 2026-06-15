@@ -1,5 +1,6 @@
 import { io, type Socket } from "socket.io-client";
 import { queryClient } from "../lib/queryClient";
+import { playCoins, playExplosion, playTakeoff } from "./audio.service";
 import type { Bet } from "./store";
 import { gameStore } from "./store";
 
@@ -80,6 +81,7 @@ class SocketService {
 		this.socket.on("round:start", (data: { roundId: string }) => {
 			console.log("[SocketService] Event: round:start", data);
 			this.clearCountdown();
+			playTakeoff();
 
 			// Transition user bet to CONFIRMED
 			const state = gameStore.getState();
@@ -119,6 +121,7 @@ class SocketService {
 			(data: { roundId: string; crashPoint: number; serverSeed: string }) => {
 				console.log("[SocketService] Event: round:crashed", data);
 				this.clearCountdown();
+				playExplosion();
 
 				const state = gameStore.getState();
 
@@ -200,13 +203,36 @@ class SocketService {
 
 				// If it is our own, update userBet and activeBets, and invalidate queries
 				if (data.playerId === state.playerId) {
+					playCoins();
+
+					const currency = state.userBet?.currency || "BRL";
+					const formatVal = (amount: number, curr: string) => {
+						if (curr === "BRL" || curr === "USD") {
+							return (amount / 100).toFixed(2);
+						}
+						if (curr === "BTC") {
+							return (amount / 100000000).toFixed(8);
+						}
+						if (curr === "ETH") {
+							return (amount / 1000000000000000000).toFixed(8);
+						}
+						return amount.toString();
+					};
+					const formattedPayout = formatVal(data.payout, currency);
+					gameStore.addToast({
+						type: "success",
+						message: `Aposta encerrada com sucesso a ${data.multiplier}x! Recebido ${formattedPayout} ${currency}`,
+					});
+
 					gameStore.setState({
-						userBet: {
-							...state.userBet,
-							status: "CASHOUT" as const,
-							cashOutMultiplier: data.multiplier,
-							payoutAmount: data.payout,
-						} as any,
+						userBet: state.userBet
+							? {
+									...state.userBet,
+									status: "CASHOUT" as const,
+									cashOutMultiplier: data.multiplier,
+									payoutAmount: data.payout,
+								}
+							: null,
 						activeBets: state.activeBets.map((b) => {
 							if (b.playerId === data.playerId) {
 								return {

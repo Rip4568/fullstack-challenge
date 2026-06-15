@@ -36,6 +36,7 @@ export function usePlaceBet() {
 			const { data } = await apiClient.post<Bet>("/games/bet", {
 				amount,
 				currency,
+				autoCashoutMultiplier,
 			});
 			const bet: Bet = {
 				...data,

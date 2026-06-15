@@ -41,6 +41,15 @@ const BetPanel = () => {
 	// Ref to track round triggering to prevent duplicate bets per round
 	const lastPlacedRoundId = useRef("");
 
+	// Dynamically calculate bet limits based on selected currency
+	const getBetLimits = () => {
+		if (selectedCurrency === "BTC" || selectedCurrency === "ETH") {
+			return { min: "0.00001", max: "100.0" };
+		}
+		return { min: "1.00", max: "1000.00" };
+	};
+	const limits = getBetLimits();
+
 	// Find active balance based on selected currency
 	const activeBalance = state.balances.find(
 		(b) => b.currency === selectedCurrency,
@@ -84,6 +93,33 @@ const BetPanel = () => {
 	const handlePlaceBet = useCallback(async () => {
 		const rawAmount = getRawAmount(betAmount, selectedCurrency);
 		if (rawAmount <= 0) return;
+
+		// Programmatic validation matching backend database constraints
+		const bigIntAmount = BigInt(Math.round(rawAmount));
+		let minLimit = 100n;
+		let maxLimit = 100000n;
+
+		if (selectedCurrency === "BTC") {
+			minLimit = 1000n;
+			maxLimit = 10000000000n;
+		} else if (selectedCurrency === "ETH") {
+			minLimit = 10000000000000n;
+			maxLimit = 100000000000000000000n;
+		}
+
+		if (bigIntAmount < minLimit || bigIntAmount > maxLimit) {
+			const minStr = selectedCurrency === "BTC" || selectedCurrency === "ETH" ? "0.00001" : "1.00";
+			const maxStr = selectedCurrency === "BTC" || selectedCurrency === "ETH" ? "100.00" : "1,000.00";
+			gameStore.setState({
+				error: `Aposta fora dos limites permitidos: mínimo de ${minStr} e máximo de ${maxStr} ${selectedCurrency}.`,
+			});
+			setIsAutoBetActive(false);
+			setRemainingRounds(0);
+			return;
+		}
+
+		// Clear error when validation succeeds
+		gameStore.setState({ error: null });
 
 		const numericAuto = parseFloat(autoCashout);
 		const autoCashoutVal =
@@ -153,6 +189,17 @@ const BetPanel = () => {
 		state.userBet,
 		handlePlaceBet,
 	]);
+
+	// Turn off auto bet if we lose connection
+	useEffect(() => {
+		if (!state.isConnected && state.mode === "real" && isAutoBetActive) {
+			setIsAutoBetActive(false);
+			setRemainingRounds(0);
+			gameStore.setState({
+				error: "Apostas automáticas desativadas por perda de conexão com o servidor.",
+			});
+		}
+	}, [state.isConnected, state.mode, isAutoBetActive]);
 
 	// Dynamic cashout return calculator
 	const getDynamicPayout = () => {
@@ -260,11 +307,8 @@ const BetPanel = () => {
 								? "0.0001"
 								: "0.01"
 						}
-						min={
-							selectedCurrency === "BTC" || selectedCurrency === "ETH"
-								? "0.00000001"
-								: "0.10"
-						}
+						min={limits.min}
+						max={limits.max}
 						value={betAmount}
 						onChange={(e) => setBetAmount(e.target.value)}
 						disabled={!!state.userBet && state.userBet.status !== "REJECTED"}

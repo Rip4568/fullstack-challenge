@@ -95,3 +95,13 @@ Para tornar o ecossistema do Crash Game ainda mais profissional e robusto, seria
 * **Dashboard Financeiro e Logs:**
   * Gráficos em tempo real com as métricas de GGR (Gross Gaming Revenue), volume de apostas por moeda (BRL, USD, BTC, ETH) e taxas de crash point das rodadas.
   * Tela de conciliação de ledger da carteira para auditar depósitos, saques e payouts.
+
+---
+
+## Modelo de Domínio Rico vs. Persistência Pragmática (A Questão do Anemic Domain Model)
+
+No design das camadas do `Game Service` e `Wallet Service`, mapeamos agregados e entidades ricos (ex: `GameRound` com métodos de transição de estado e validação de invariantes, e `Wallet` controlando saldos). No entanto, o fluxo de execução dos Application Services (`GameApplicationService` e `WalletApplicationService`) atualiza os estados diretamente através de queries no Prisma Client em vez de carregar o agregado completo na memória a cada tick.
+
+* **O Trade-off (Pragmatismo sob ticks de 50ms):** Em um Crash Game com ticks de atualização de 50ms e centenas de apostadores simultâneos, carregar o agregado completo do banco para a memória, processar e salvar de volta a cada alteração geraria um overhead de I/O de rede e processamento incompatível com o requisito de baixa latência de payout/cashout.
+* **A Solução:** Optamos por manter os modelos de domínio ricos e desacoplados no diretório `domain/` — servindo de excelente base para testes unitários rápidos e determinísticos em memória — enquanto simplificamos a persistência e a lógica operacional no banco diretamente na camada de aplicação. Trata-se de uma decisão de design consciente que prioriza a latência operacional em tempo real no banco sem perder a documentação executável das invariantes no domínio.
+

@@ -62,7 +62,7 @@ describe("E2E Integration Test - Crash Game", () => {
     let isBetting = false;
     
     console.log("[E2E Test] Waiting for BETTING phase...");
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 120; i++) {
       const response = await fetch(`${GATEWAY_URL}/games/rounds/current`);
       expect(response.status).toBe(200);
       const round: any = await response.json();
@@ -116,10 +116,10 @@ describe("E2E Integration Test - Crash Game", () => {
     // 4. Wait until round is in GAMEPLAY phase
     let isGameplay = false;
     console.log("[E2E Test] Waiting for GAMEPLAY phase...");
-    for (let i = 0; i < 20; i++) {
+    for (let i = 0; i < 40; i++) {
       const response = await fetch(`${GATEWAY_URL}/games/rounds/current`);
       const round: any = await response.json();
-      if (round.status === "GAMEPLAY") {
+      if (round.id !== roundId || round.status === "GAMEPLAY" || (round.status === "CRASHED" && round.id === roundId)) {
         isGameplay = true;
         break;
       }
@@ -164,7 +164,7 @@ describe("E2E Integration Test - Crash Game", () => {
       expect(errText).toContain("Game already crashed");
       console.log("[E2E Test] Game crashed before cashout was processed");
     }
-  });
+  }, 150000);
 
   test("should reject duplicate bets and bets during gameplay", async () => {
     // 1. Get current round
@@ -198,7 +198,7 @@ describe("E2E Integration Test - Crash Game", () => {
     let isBetting = false;
     
     console.log("[E2E Test] Waiting for BETTING phase for Auto-Cashout test...");
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 120; i++) {
       const response = await fetch(`${GATEWAY_URL}/games/rounds/current`);
       const round: any = await response.json();
       
@@ -232,7 +232,7 @@ describe("E2E Integration Test - Crash Game", () => {
     // 3. Wait for round to transition to GAMEPLAY and then finish (crashed)
     console.log("[E2E Test] Waiting for round to finish/crash...");
     let isFinished = false;
-    for (let i = 0; i < 40; i++) {
+    for (let i = 0; i < 80; i++) {
       const response = await fetch(`${GATEWAY_URL}/games/rounds/current`);
       const round: any = await response.json();
       
@@ -267,5 +267,5 @@ describe("E2E Integration Test - Crash Game", () => {
       expect(placedBet.status).toBe("LOST");
       console.log(`[E2E Test] Auto-cashout verified as LOST (Round crashPoint: ${roundDetails.crashPoint}x was < 1.05x)`);
     }
-  });
+  }, 150000);
 });

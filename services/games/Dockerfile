@@ -10,4 +10,4 @@ RUN bunx prisma generate
 
 EXPOSE 4001
 
-CMD ["sh", "-c", "bunx prisma db push && bun run src/main.ts"]
+CMD ["sh", "-c", "bunx prisma db push --accept-data-loss && bun run src/main.ts"]

@@ -65,9 +65,19 @@ export class GameApplicationService {
       throw new BadRequestException("No active betting round available");
     }
 
-    // 2. Enforce limits: min 1.00 BRL (100 cents), max 1000.00 BRL (100,000 cents)
-    // Limits apply to USD as well.
-    if (amountCents < 100n || amountCents > 100000n) {
+    // 2. Enforce limits based on currency
+    let minLimit = 100n;
+    let maxLimit = 100000n;
+
+    if (currency === "BTC") {
+      minLimit = 1000n; // 0.00001000 BTC
+      maxLimit = 10000000000n; // 100.00 BTC
+    } else if (currency === "ETH") {
+      minLimit = 10000000000000n; // 0.00001000 ETH
+      maxLimit = 100000000000000000000n; // 100.00 ETH
+    }
+
+    if (amountCents < minLimit || amountCents > maxLimit) {
       throw new BadRequestException(
         "Bet amount must be between 1.00 and 1,000.00"
       );

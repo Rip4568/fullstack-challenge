@@ -191,4 +191,81 @@ describe("E2E Integration Test - Crash Game", () => {
       console.log("[E2E Test] Correctly rejected bet during GAMEPLAY");
     }
   });
+
+  test("should process auto-cashout successfully when target multiplier is met", async () => {
+    // 1. Wait until current round is in BETTING phase
+    let roundId = "";
+    let isBetting = false;
+    
+    console.log("[E2E Test] Waiting for BETTING phase for Auto-Cashout test...");
+    for (let i = 0; i < 30; i++) {
+      const response = await fetch(`${GATEWAY_URL}/games/rounds/current`);
+      const round: any = await response.json();
+      
+      if (round.status === "BETTING") {
+        roundId = round.id;
+        isBetting = true;
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    }
+    
+    expect(isBetting).toBe(true);
+
+    // 2. Place a bet of $5.00 (500 cents) with autoCashoutMultiplier = 1.05
+    const betResponse = await fetch(`${GATEWAY_URL}/games/bet`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        amount: 500,
+        currency: "BRL",
+        autoCashoutMultiplier: 1.05,
+      }),
+    });
+    expect(betResponse.status).toBe(201);
+    const betData: any = await betResponse.json();
+    expect(betData.status).toBe("PENDING");
+
+    // 3. Wait for round to transition to GAMEPLAY and then finish (crashed)
+    console.log("[E2E Test] Waiting for round to finish/crash...");
+    let isFinished = false;
+    for (let i = 0; i < 40; i++) {
+      const response = await fetch(`${GATEWAY_URL}/games/rounds/current`);
+      const round: any = await response.json();
+      
+      if (round.id !== roundId || round.status === "CRASHED") {
+        isFinished = true;
+        break;
+      }
+      await new Promise((resolve) => setTimeout(resolve, 500));
+    }
+    expect(isFinished).toBe(true);
+
+    // 4. Fetch the bet from history to check if it was auto-cashed out or lost
+    const myBetsResponse = await fetch(`${GATEWAY_URL}/games/bets/me?limit=10&offset=0`, {
+      method: "GET",
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const myBets: any = await myBetsResponse.json();
+    const placedBet = myBets.items.find((b: any) => b.id === betData.id);
+    expect(placedBet).toBeDefined();
+
+    // Verify status: if the round's crash point was >= 1.05, it must be CASHOUT. If it crashed below 1.05, it must be LOST.
+    const roundResponse = await fetch(`${GATEWAY_URL}/games/rounds/${roundId}/verify`);
+    expect(roundResponse.status).toBe(200);
+    const roundDetails: any = await roundResponse.json();
+    
+    if (roundDetails.crashPoint >= 1.05) {
+      expect(placedBet.status).toBe("CASHOUT");
+      expect(placedBet.cashOutMultiplier).toBe(1.05);
+      expect(placedBet.payoutAmount).toBe(525);
+      console.log(`[E2E Test] Auto-cashout verified as CASHOUT at 1.05x (Round crashPoint: ${roundDetails.crashPoint}x)`);
+    } else {
+      expect(placedBet.status).toBe("LOST");
+      console.log(`[E2E Test] Auto-cashout verified as LOST (Round crashPoint: ${roundDetails.crashPoint}x was < 1.05x)`);
+    }
+  });
 });

@@ -183,6 +183,20 @@ describe("GameApplicationService", () => {
       prisma.bet.findUnique = mock(async () => null);
       await expect(service.placeBet(PLAYER_ID, "player", 10000000000000n, "ETH")).resolves.toBeDefined();
     });
+
+    test("saves autoCashoutMultiplier when placing a bet with it", async () => {
+      prisma.bet.findUnique = mock(async () => null);
+      prisma.bet.create = mock(async ({ data }: any) => ({ ...mockPendingBet, autoCashoutMultiplier: data.autoCashoutMultiplier }));
+
+      const bet = await service.placeBet(PLAYER_ID, "player", 1000n, "BRL", 2.5);
+
+      expect(bet.autoCashoutMultiplier).toBe(2.5);
+      expect(prisma.bet.create).toHaveBeenCalledWith(
+        expect.objectContaining({
+          data: expect.objectContaining({ autoCashoutMultiplier: 2.5 }),
+        })
+      );
+    });
   });
 
   // ───────────────────────────────────────────────────────────────────────────

@@ -5,17 +5,17 @@ import { Wallet } from "../../domain/wallet.entity";
  */
 export class BalanceResponseDto {
   /** Identificador único do saldo. */
-  id: string;
+  id!: string;
   /** Identificador da carteira associada. */
-  walletId: string;
+  walletId!: string;
   /** Código da moeda (BRL, USD, BTC, ETH). */
-  currency: string;
+  currency!: string;
   /** Valor bruto na menor unidade física da moeda (cents, Satoshis, Wei). */
-  amount: number;
+  amount!: number;
   /** Valor formatado como número real/float decimal de fácil leitura. */
-  amountFormatted: number;
+  amountFormatted!: number;
   /** Estimativa aproximada de mercado em dólares americanos (USD). */
-  estimatedUsdValue: number;
+  estimatedUsdValue!: number;
 }
 
 /**
@@ -23,15 +23,15 @@ export class BalanceResponseDto {
  */
 export class WalletResponseDto {
   /** Identificador único da carteira. */
-  id: string;
+  id!: string;
   /** Identificador único do jogador. */
-  playerId: string;
+  playerId!: string;
   /** Listagem de saldos detalhados por moeda. */
-  balances: BalanceResponseDto[];
+  balances!: BalanceResponseDto[];
   /** Data de criação do registro. */
-  createdAt: Date;
+  createdAt!: Date;
   /** Data da última atualização de saldo. */
-  updatedAt: Date;
+  updatedAt!: Date;
 
   /**
    * Converte uma entidade de domínio Wallet para o DTO de resposta,

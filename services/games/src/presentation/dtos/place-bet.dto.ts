@@ -3,7 +3,7 @@ import { IsInt, Min, IsString, IsOptional, IsNumber } from "class-validator";
 export class PlaceBetDto {
   @IsInt()
   @Min(1, { message: "Bet amount must be positive" })
-  amount: number;
+  amount!: number;
 
   @IsString()
   @IsOptional()

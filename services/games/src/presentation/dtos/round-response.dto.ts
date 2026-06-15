@@ -1,16 +1,16 @@
 import { RoundStatus } from "../../infrastructure/persistence/prisma/client";
 
 export class BetResponseDto {
-  id: string;
-  roundId: string;
-  playerId: string;
-  username: string;
-  amount: number;
-  currency: string;
-  status: string;
-  cashOutMultiplier: number | null;
-  payoutAmount: number | null;
-  createdAt: Date;
+  id!: string;
+  roundId!: string;
+  playerId!: string;
+  username!: string;
+  amount!: number;
+  currency!: string;
+  status!: string;
+  cashOutMultiplier!: number | null;
+  payoutAmount!: number | null;
+  createdAt!: Date;
   round?: {
     status: string;
     crashPoint: number | null;
@@ -41,15 +41,15 @@ export class BetResponseDto {
 }
 
 export class RoundResponseDto {
-  id: string;
-  gameId: string;
-  status: string;
-  serverSeed: string | null;
-  serverSeedHash: string;
-  clientSeed: string;
-  crashPoint: number | null;
-  createdAt: Date;
-  endedAt: Date | null;
+  id!: string;
+  gameId!: string;
+  status!: string;
+  serverSeed!: string | null;
+  serverSeedHash!: string;
+  clientSeed!: string;
+  crashPoint!: number | null;
+  createdAt!: Date;
+  endedAt!: Date | null;
   bets?: BetResponseDto[];
 
   static fromEntity(round: any): RoundResponseDto {

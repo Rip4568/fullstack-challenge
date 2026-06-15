@@ -10,6 +10,7 @@ import {
 	Link,
 	Outlet,
 	Scripts,
+	useNavigate,
 } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { useEffect, useState } from "react";
@@ -47,6 +48,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 );
 
 function AppShell() {
+	const navigate = useNavigate();
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 	const state = useGameState();
 
@@ -87,7 +89,7 @@ function AppShell() {
 			<JungleBackground />
 
 			<div className="relative z-10 flex w-full min-h-screen pt-20">
-				<Sidebar onDepositClick={() => {}} />
+				<Sidebar onDepositClick={() => navigate({ to: "/profile" })} />
 				<div className="flex-1 lg:pl-64 w-full min-w-0 min-h-[calc(100vh-5rem)]">
 					<Outlet />
 				</div>

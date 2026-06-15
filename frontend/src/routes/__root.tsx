@@ -15,6 +15,7 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { useEffect, useState } from "react";
 import BottomNav from "../components/layout/BottomNav";
 import Header from "../components/layout/Header";
+import JungleBackground from "../components/layout/JungleBackground";
 import Sidebar from "../components/layout/Sidebar";
 import { authService } from "../core/auth.service";
 import { gameStore, useGameState } from "../core/store";
@@ -74,6 +75,7 @@ function AppShell() {
 	return (
 		<>
 			<Header />
+			<JungleBackground />
 
 			<div className="flex w-full min-h-screen pt-20">
 				<Sidebar onDepositClick={() => {}} />

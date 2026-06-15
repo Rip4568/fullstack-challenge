@@ -19,6 +19,7 @@ import JungleBackground from "../components/layout/JungleBackground";
 import Sidebar from "../components/layout/Sidebar";
 import { authService } from "../core/auth.service";
 import { gameStore, useGameState } from "../core/store";
+import { startJungleTour } from "../core/tour";
 import { walletQueryOptions } from "../queries/wallet.queries";
 
 import appCss from "../styles.css?url";
@@ -58,6 +59,14 @@ function AppShell() {
 			}
 		};
 		handleAuth();
+	}, []);
+
+	// Run tour on mount if not completed before
+	useEffect(() => {
+		const timer = setTimeout(() => {
+			startJungleTour(false);
+		}, 1000);
+		return () => clearTimeout(timer);
 	}, []);
 
 	// Fetch wallet with TanStack Query — syncs result to gameStore for real-time components

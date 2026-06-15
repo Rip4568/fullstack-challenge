@@ -6,7 +6,10 @@ interface BottomNavProps {
 
 export default function BottomNav({ onMenuToggle }: BottomNavProps) {
 	return (
-		<nav className="fixed bottom-0 left-0 w-full z-50 rounded-t-xl bg-surface-container-high border-t border-outline-variant shadow-[0_-4px_20px_rgba(0,230,1,0.15)] flex justify-around items-center h-20 pb-safe px-2 lg:hidden">
+		<nav
+			id="tour-bottom-nav"
+			className="fixed bottom-0 left-0 w-full z-50 rounded-t-xl bg-surface-container-high border-t border-outline-variant shadow-[0_-4px_20px_rgba(0,230,1,0.15)] flex justify-around items-center h-20 pb-safe px-2 lg:hidden"
+		>
 			<button
 				onClick={onMenuToggle}
 				type="button"
@@ -31,6 +34,7 @@ export default function BottomNav({ onMenuToggle }: BottomNavProps) {
 
 			<Link
 				to="/deposit"
+				id="tour-deposit-mobile-btn"
 				className="flex flex-col items-center justify-center text-primary bg-primary/10 rounded-xl py-2 px-4 shadow-[0_0_10px_rgba(125,255,103,0.3)] active:scale-90"
 			>
 				<span className="material-symbols-outlined fill">add_circle</span>

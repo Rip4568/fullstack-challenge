@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;700;800&family=JetBrains+Mono:wght@600;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200");
+@import "driver.js/dist/driver.css";
 @import "tailwindcss";
 @plugin "@tailwindcss/typography";
 
@@ -131,3 +132,77 @@ body {
 .bg-jungle-glow {
   background: radial-gradient(circle at top right, rgba(0, 230, 1, 0.08) 0%, transparent 60%);
 }
+
+/* driver.js Neon Syndicate Custom Popover Theme */
+.driver-popover.jungle-tour-popover {
+  background-color: #1A1D21 !important;
+  color: #e2e2e5 !important;
+  border: 1px solid #7dff67 !important;
+  border-radius: 8px !important;
+  box-shadow: 0 0 20px rgba(125, 255, 103, 0.25) !important;
+  font-family: "Manrope", sans-serif !important;
+}
+
+.driver-popover.jungle-tour-popover .driver-popover-title {
+  color: #7dff67 !important;
+  font-weight: 700 !important;
+  font-size: 18px !important;
+}
+
+.driver-popover.jungle-tour-popover .driver-popover-description {
+  color: #e2e2e5 !important;
+  font-size: 14px !important;
+}
+
+.driver-popover.jungle-tour-popover .driver-popover-progress-text {
+  color: #85967d !important;
+}
+
+/* Override Driver.js Popover Buttons */
+.driver-popover.jungle-tour-popover .driver-popover-btn {
+  background-color: #7dff67 !important;
+  color: #0c0e10 !important;
+  font-weight: 700 !important;
+  border: 1px solid #7dff67 !important;
+  border-radius: 6px !important;
+  padding: 6px 12px !important;
+  font-family: "Manrope", sans-serif !important;
+  text-shadow: none !important;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  box-shadow: 0 0 10px rgba(125, 255, 103, 0.4) !important;
+  cursor: pointer !important;
+}
+
+.driver-popover.jungle-tour-popover .driver-popover-btn:hover {
+  background-color: #00e701 !important;
+  border-color: #00e701 !important;
+  box-shadow: 0 0 15px rgba(125, 255, 103, 0.6) !important;
+}
+
+.driver-popover.jungle-tour-popover .driver-popover-btn:active {
+  transform: scale(0.95) !important;
+}
+
+/* Specifically color the close and back buttons differently if needed, or keep them themed */
+.driver-popover.jungle-tour-popover .driver-popover-close-btn {
+  color: #baccb1 !important;
+}
+
+.driver-popover.jungle-tour-popover .driver-popover-close-btn:hover {
+  color: #ffb4ab !important;
+}
+
+/* Arrow Styling to match popover background */
+.driver-popover.jungle-tour-popover .driver-popover-arrow-side-left.driver-popover-arrow {
+  border-left-color: #1A1D21 !important;
+}
+.driver-popover.jungle-tour-popover .driver-popover-arrow-side-right.driver-popover-arrow {
+  border-right-color: #1A1D21 !important;
+}
+.driver-popover.jungle-tour-popover .driver-popover-arrow-side-top.driver-popover-arrow {
+  border-top-color: #1A1D21 !important;
+}
+.driver-popover.jungle-tour-popover .driver-popover-arrow-side-bottom.driver-popover-arrow {
+  border-bottom-color: #1A1D21 !important;
+}
+

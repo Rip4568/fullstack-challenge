@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
 import { authService } from "../../core/auth.service";
 import { gameStore, useGameState } from "../../core/store";
+import { startJungleTour } from "../../core/tour";
 
 export default function Header() {
 	const state = useGameState();
@@ -44,6 +45,7 @@ export default function Header() {
 			<div className="flex items-center gap-4">
 				<Link
 					to="/"
+					id="tour-welcome-header"
 					className="text-headline-md font-sans font-extrabold text-primary tracking-tighter neon-glow"
 				>
 					Jungle Crash
@@ -51,8 +53,21 @@ export default function Header() {
 			</div>
 
 			<div className="flex items-center gap-3">
+				{/* Quick Tour Button */}
+				<button
+					onClick={() => startJungleTour(true)}
+					type="button"
+					title="Start Quick Tour"
+					className="flex items-center justify-center bg-surface-container-low px-3 py-1.5 rounded-lg border border-outline-variant cursor-pointer active:scale-95 transition-all hover:border-primary/50 text-on-surface-variant hover:text-primary hover:shadow-[0_0_10px_rgba(125,255,103,0.2)]"
+				>
+					<span className="material-symbols-outlined text-sm">explore</span>
+					<span className="hidden md:inline font-sans text-xs font-bold ml-1.5">
+						Quick Tour
+					</span>
+				</button>
+
 				{/* Balance Selector Dropdown */}
-				<div className="relative" ref={dropdownRef}>
+				<div className="relative" ref={dropdownRef} id="tour-wallet-selector">
 					<button
 						onClick={() => setDropdownOpen(!dropdownOpen)}
 						type="button"

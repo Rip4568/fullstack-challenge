@@ -9,7 +9,10 @@ export default function Sidebar({ onDepositClick }: SidebarProps) {
 	const [isGamesOpen, setIsGamesOpen] = useState(true);
 
 	return (
-		<aside className="fixed left-0 top-0 h-full flex flex-col pt-24 pb-4 border-r border-outline-variant bg-surface-container w-64 hidden lg:flex z-40">
+		<aside
+			id="tour-sidebar"
+			className="fixed left-0 top-0 h-full flex flex-col pt-24 pb-4 border-r border-outline-variant bg-surface-container w-64 hidden lg:flex z-40"
+		>
 			<nav className="flex flex-col gap-2 px-4 flex-grow">
 				{/* Lobby Link */}
 				<Link
@@ -89,6 +92,7 @@ export default function Sidebar({ onDepositClick }: SidebarProps) {
 
 			<div className="px-4 mt-auto space-y-2">
 				<button
+					id="tour-deposit-btn"
 					onClick={onDepositClick}
 					type="button"
 					className="w-full bg-primary text-on-primary font-bold py-3 rounded-xl flex items-center justify-center gap-2 neon-btn-glow active:scale-95 transition-all cursor-pointer"

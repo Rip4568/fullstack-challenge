@@ -106,28 +106,15 @@ export function Lobby() {
 					<h3 className="text-lg font-bold text-white z-10">Crash Game</h3>
 					{/* Airplane background — rotated 45° climbing to top-right */}
 					<svg
-						viewBox="0 0 120 120"
-						fill="none"
+						viewBox="0 0 512 512"
+						fill="currentColor"
 						xmlns="http://www.w3.org/2000/svg"
-						className="absolute -bottom-4 -right-4 w-36 h-36 text-primary/15 group-hover:text-primary/40 -rotate-[35deg] group-hover:scale-110 group-hover:-translate-y-3 group-hover:translate-x-1 transition-all duration-500 ease-out pointer-events-none"
+						className="absolute -bottom-6 -right-6 w-36 h-36 text-[#7DFF67]/15 group-hover:text-[#7DFF67]/40 group-hover:scale-110 group-hover:-translate-y-3 group-hover:translate-x-1 transition-all duration-500 ease-out pointer-events-none"
 					>
 						<title>Crash Game Airplane</title>
-						{/* Fuselage */}
-						<ellipse cx="60" cy="60" rx="40" ry="10" fill="currentColor" />
-						{/* Nose */}
-						<path d="M100 60 Q115 60 108 54 L100 50Z" fill="currentColor" />
-						{/* Main wings */}
-						<path d="M65 60 L80 30 L90 35 L75 60Z" fill="currentColor" />
-						<path d="M65 60 L80 90 L90 85 L75 60Z" fill="currentColor" />
-						{/* Tail fin (vertical) */}
-						<path d="M22 60 L15 40 L30 52Z" fill="currentColor" />
-						{/* Tail wings (horizontal) */}
-						<path d="M25 60 L18 45 L32 55Z" fill="currentColor" opacity="0.6" />
-						<path d="M25 60 L18 75 L32 65Z" fill="currentColor" opacity="0.6" />
-						{/* Engine trail dots */}
-						<circle cx="14" cy="60" r="2.5" fill="currentColor" opacity="0.5" />
-						<circle cx="6" cy="60" r="1.8" fill="currentColor" opacity="0.3" />
-						<circle cx="0" cy="60" r="1" fill="currentColor" opacity="0.15" />
+						<path d="M500.146,11.928C487.408-0.883,462.448,0.033,444.365,0.006c-0.033,0-0.061,0-0.094,0c-18.1,0-35.124,7.059-47.933,19.875 L143.06,273.038l-50.961-10.191c-5.553-1.092-11.3,0.628-15.315,4.643L4.954,339.435c-4.411,4.417-6.033,10.908-4.224,16.88 c1.814,5.978,6.766,10.472,12.888,11.696l108.639,21.733l21.733,108.639c1.224,6.121,5.718,11.074,11.696,12.888 c1.616,0.491,3.271,0.728,4.914,0.728c4.423,0,8.747-1.731,11.967-4.951l71.945-71.829c4.014-4.004,5.757-9.75,4.643-15.315 l-10.191-50.961l253.157-253.278c12.838-12.838,19.897-29.894,19.87-48.027C511.964,49.555,512.885,24.595,500.146,11.928z" />
+						<path d="M68.742,46.015c-5.377-0.893-10.892,0.861-14.763,4.731L6.091,98.629c-4.025,4.025-5.763,9.806-4.616,15.38 c1.142,5.582,5.012,10.209,10.301,12.326l164.328,65.767L286.032,82.23L68.742,46.015z" />
+						<path d="M465.987,443.26L429.774,225.97L319.901,335.898l65.767,164.328c2.118,5.289,6.745,9.159,12.325,10.301 c1.131,0.232,2.272,0.348,3.403,0.348c4.445,0,8.769-1.754,11.977-4.964l47.884-47.889 C465.128,454.156,466.886,448.658,465.987,443.26z" />
 					</svg>
 				</Link>
 

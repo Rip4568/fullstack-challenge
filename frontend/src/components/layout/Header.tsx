@@ -130,6 +130,10 @@ export default function Header() {
 										username: "GorillaGambler",
 										playerId: "mock-player-id",
 									});
+									gameStore.addToast({
+										type: "success",
+										message: "Login efetuado com sucesso! Bem-vindo de volta.",
+									});
 								}
 							}}
 							type="button"
@@ -145,6 +149,11 @@ export default function Header() {
 									gameStore.setState({
 										username: "LuckyHunter",
 										playerId: "mock-player-id",
+									});
+									gameStore.addToast({
+										type: "success",
+										message:
+											"Cadastro realizado com sucesso! Bem-vindo ao Jungle Crash.",
 									});
 								}
 							}}

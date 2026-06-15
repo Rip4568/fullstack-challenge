@@ -1,3 +1,4 @@
+import { playCoins, playExplosion, playTakeoff } from "./audio.service";
 import type { Bet } from "./store";
 import { gameStore } from "./store";
 
@@ -142,6 +143,7 @@ class MockEngine {
 		gameStore.setState({
 			roundState: "GAMEPLAY",
 		});
+		playTakeoff();
 
 		const startTime = Date.now();
 		const tickRateMs = 50;
@@ -217,6 +219,7 @@ class MockEngine {
 
 	private async runCrashedPhase() {
 		if (this.tickInterval) clearInterval(this.tickInterval);
+		playExplosion();
 
 		const state = gameStore.getState();
 		const finalCrash = this.currentCrashPoint;
@@ -327,6 +330,27 @@ class MockEngine {
 			activeBets: state.activeBets.map((b) =>
 				b.playerId === state.playerId ? updatedBet : b,
 			),
+		});
+
+		playCoins();
+
+		const currency = state.userBet.currency;
+		const formatVal = (amount: number, curr: string) => {
+			if (curr === "BRL" || curr === "USD") {
+				return (amount / 100).toFixed(2);
+			}
+			if (curr === "BTC") {
+				return (amount / 100000000).toFixed(8);
+			}
+			if (curr === "ETH") {
+				return (amount / 1000000000000000000).toFixed(8);
+			}
+			return amount.toString();
+		};
+		const formattedPayout = formatVal(payout, currency);
+		gameStore.addToast({
+			type: "success",
+			message: `Aposta encerrada com sucesso a ${multiplier}x! Recebido ${formattedPayout} ${currency}`,
 		});
 
 		return updatedBet;

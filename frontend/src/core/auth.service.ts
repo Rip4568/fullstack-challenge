@@ -77,6 +77,7 @@ class AuthService {
 	public async redirectToRegister() {
 		const verifier = this.generateRandomString(64);
 		window.localStorage.setItem("pkce_code_verifier", verifier);
+		window.localStorage.setItem("auth_is_registering", "true");
 
 		const challenge = await this.generateChallenge(verifier);
 		const redirectUri = `${window.location.origin}/`;
@@ -133,10 +134,22 @@ class AuthService {
 
 			// Clean query params from URL
 			window.history.replaceState({}, document.title, window.location.pathname);
-			gameStore.addToast({
-				type: "success",
-				message: "Login efetuado com sucesso! Bem-vindo de volta.",
-			});
+
+			const isRegistering =
+				window.localStorage.getItem("auth_is_registering") === "true";
+			window.localStorage.removeItem("auth_is_registering");
+
+			if (isRegistering) {
+				gameStore.addToast({
+					type: "success",
+					message: "Cadastro realizado com sucesso! Bem-vindo ao Jungle Crash.",
+				});
+			} else {
+				gameStore.addToast({
+					type: "success",
+					message: "Login efetuado com sucesso! Bem-vindo de volta.",
+				});
+			}
 			return true;
 		} catch (err) {
 			console.error("[AuthService] Error exchanging code for tokens:", err);

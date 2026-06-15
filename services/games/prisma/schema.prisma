@@ -45,7 +45,7 @@ model GameRound {
   serverSeed     String      @map("server_seed")
   serverSeedHash String      @map("server_seed_hash")
   clientSeed     String      @map("client_seed")
-  crashPoint     Float       @map("crash_point")
+  crashPoint     Int         @map("crash_point")
   createdAt      DateTime    @default(now()) @map("created_at")
   endedAt        DateTime?   @map("ended_at")
   game           Game        @relation(fields: [gameId], references: [id])
@@ -59,11 +59,11 @@ model Bet {
   roundId               String    @map("round_id")
   playerId              String    @map("player_id")
   username              String
-  amount                BigInt    // Valor em centavos
+  amount                BigInt // Valor em centavos
   currency              String    @default("BRL")
   status                BetStatus
-  cashOutMultiplier     Float?    @map("cashout_multiplier")
-  autoCashoutMultiplier Float?    @map("auto_cashout_multiplier")
+  cashOutMultiplier     Int?      @map("cashout_multiplier")
+  autoCashoutMultiplier Int?      @map("auto_cashout_multiplier")
   payoutAmount          BigInt?   @map("payout_amount")
   createdAt             DateTime  @default(now()) @map("created_at")
   round                 GameRound @relation(fields: [roundId], references: [id])
@@ -71,4 +71,3 @@ model Bet {
   @@unique([roundId, playerId]) // Limita a 1 aposta por rodada por jogador
   @@map("bets")
 }
-

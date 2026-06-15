@@ -20,7 +20,7 @@ export class BetResponseDto {
   static fromEntity(bet: any): BetResponseDto {
     const roundInfo = bet.round ? {
       status: bet.round.status,
-      crashPoint: bet.round.status === RoundStatus.CRASHED ? bet.round.crashPoint : null,
+      crashPoint: bet.round && bet.round.status === RoundStatus.CRASHED ? bet.round.crashPoint / 100 : null,
       serverSeedHash: bet.round.serverSeedHash,
     } : undefined;
 
@@ -32,7 +32,7 @@ export class BetResponseDto {
       amount: Number(bet.amount),
       currency: bet.currency,
       status: bet.status,
-      cashOutMultiplier: bet.cashOutMultiplier,
+      cashOutMultiplier: bet.cashOutMultiplier ? bet.cashOutMultiplier / 100 : null,
       payoutAmount: bet.payoutAmount ? Number(bet.payoutAmount) : null,
       createdAt: bet.createdAt,
       round: roundInfo,
@@ -61,7 +61,7 @@ export class RoundResponseDto {
       serverSeed: isCrashed ? round.serverSeed : null,
       serverSeedHash: round.serverSeedHash,
       clientSeed: round.clientSeed,
-      crashPoint: isCrashed ? round.crashPoint : null,
+      crashPoint: isCrashed && round.crashPoint ? round.crashPoint / 100 : null,
       createdAt: round.createdAt,
       endedAt: round.endedAt,
       bets: round.bets ? round.bets.map((b: any) => BetResponseDto.fromEntity(b)) : undefined,

@@ -48,7 +48,7 @@ export function ProfilePage() {
 	const state = useGameState();
 	const usernameDisplay = state.username || "CyberGambler";
 
-	const { data } = useQuery({
+	const { data, isLoading } = useQuery({
 		...betHistoryQueryOptions(),
 		enabled: state.mode === "real" && !!state.token,
 	});
@@ -126,7 +126,7 @@ export function ProfilePage() {
 			<section className="grid grid-cols-1 xl:grid-cols-3 gap-8 items-start">
 				{/* Left Side: Recent Betting Activity table */}
 				<div className="xl:col-span-2">
-					<RecentActivityTable activityHistory={betHistory} />
+					<RecentActivityTable activityHistory={betHistory} isLoading={isLoading} />
 				</div>
 
 				{/* Right Side: Security 2FA settings panel */}

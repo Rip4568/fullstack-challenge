@@ -110,7 +110,7 @@ export class GameApplicationService {
         amount: amountCents,
         currency,
         status: BetStatus.PENDING,
-        autoCashoutMultiplier,
+        autoCashoutMultiplier: autoCashoutMultiplier ? Math.round(autoCashoutMultiplier * 100) : null,
       },
     });
 
@@ -229,12 +229,12 @@ export class GameApplicationService {
     }
 
     // 3. Safety Check: Cannot cash out at or above the round's pre-calculated crash point
-    if (currentMultiplier >= currentRound.crashPoint) {
+    if (Math.round(currentMultiplier * 100) >= currentRound.crashPoint) {
       throw new BadRequestException("Game already crashed");
     }
 
     // 4. Calculate payout amount in cents: amount * multiplier
-    const multiplierCents = BigInt(Math.floor(currentMultiplier * 100));
+    const multiplierCents = BigInt(Math.round(currentMultiplier * 100));
     const payoutAmount = (bet.amount * multiplierCents) / 100n;
 
     // 5. Update bet status locally to CASHOUT (with multiplier and payout)
@@ -257,7 +257,7 @@ export class GameApplicationService {
         where: { id: bet.id },
         data: {
           status: BetStatus.CASHOUT,
-          cashOutMultiplier: currentMultiplier,
+          cashOutMultiplier: Math.round(currentMultiplier * 100),
           payoutAmount: payoutAmount,
         },
       });
@@ -296,7 +296,7 @@ export class GameApplicationService {
         status: BetStatus.CONFIRMED,
         autoCashoutMultiplier: {
           not: null,
-          lte: currentMultiplier,
+          lte: Math.round(currentMultiplier * 100),
         },
       },
     });
@@ -304,9 +304,9 @@ export class GameApplicationService {
     for (const bet of betsToCashout) {
       if (!bet.autoCashoutMultiplier) continue;
 
-      const targetMultiplier = bet.autoCashoutMultiplier;
-      const multiplierCents = BigInt(Math.floor(targetMultiplier * 100));
-      const payoutAmount = (bet.amount * multiplierCents) / 100n;
+      const targetMultiplierCents = bet.autoCashoutMultiplier; // Int from DB
+      const targetMultiplier = targetMultiplierCents / 100; // Float
+      const payoutAmount = (bet.amount * BigInt(targetMultiplierCents)) / 100n;
 
       try {
         await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
@@ -322,7 +322,7 @@ export class GameApplicationService {
             where: { id: bet.id },
             data: {
               status: BetStatus.CASHOUT,
-              cashOutMultiplier: targetMultiplier,
+              cashOutMultiplier: targetMultiplierCents,
               payoutAmount: payoutAmount,
             },
           });

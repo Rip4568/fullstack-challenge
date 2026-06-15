@@ -1,4 +1,5 @@
 import { History, Rocket } from "lucide-react";
+import RecentActivityTableSkeleton from "./RecentActivityTable.skeleton";
 
 interface ActivityItem {
 	id: string;
@@ -12,9 +13,13 @@ interface ActivityItem {
 
 interface RecentActivityTableProps {
 	activityHistory: ActivityItem[];
+	isLoading?: boolean;
 }
 
-const RecentActivityTable = ({ activityHistory }: RecentActivityTableProps) => {
+const RecentActivityTable = ({
+	activityHistory,
+	isLoading = false,
+}: RecentActivityTableProps) => {
 	return (
 		<div className="space-y-4">
 			<div className="flex items-center justify-between">
@@ -35,47 +40,51 @@ const RecentActivityTable = ({ activityHistory }: RecentActivityTableProps) => {
 							</tr>
 						</thead>
 						<tbody className="text-xs font-mono divide-y-2 divide-outline-variant/20">
-							{activityHistory.map((bet) => (
-								<tr
-									key={bet.id}
-									className="hover:bg-surface-container-high/20 transition-colors"
-								>
-									<td className="px-6 py-3.5 flex items-center gap-3">
-										<div className="w-8 h-8 rounded-[2px] bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-[inset_0_0_4px_rgba(125,255,103,0.1)]">
-											<Rocket className="w-4 h-4 text-primary" />
-										</div>
-										<div>
-											<p className="font-bold text-white leading-none">
-												{bet.game}
-											</p>
-											<p className="text-[9px] text-on-surface-variant/40 mt-1 font-semibold">
-												{bet.time}
-											</p>
-										</div>
-									</td>
-									<td className="px-6 py-3.5 text-on-surface-variant font-bold">
-										{bet.wager}
-									</td>
-									<td className="px-6 py-3.5">
-										<span
-											className={`px-1.5 py-0.5 rounded-[2px] text-[10px] font-bold border ${
-												bet.win
-													? "bg-primary/10 border-primary/20 text-primary"
-													: "bg-surface-container-highest border-outline-variant text-on-surface-variant/60"
+							{isLoading ? (
+								<RecentActivityTableSkeleton />
+							) : (
+								activityHistory.map((bet) => (
+									<tr
+										key={bet.id}
+										className="hover:bg-surface-container-high/20 transition-colors"
+									>
+										<td className="px-6 py-3.5 flex items-center gap-3">
+											<div className="w-8 h-8 rounded-[2px] bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shadow-[inset_0_0_4px_rgba(125,255,103,0.1)]">
+												<Rocket className="w-4 h-4 text-primary" />
+											</div>
+											<div>
+												<p className="font-bold text-white leading-none">
+													{bet.game}
+												</p>
+												<p className="text-[9px] text-on-surface-variant/40 mt-1 font-semibold">
+													{bet.time}
+												</p>
+											</div>
+										</td>
+										<td className="px-6 py-3.5 text-on-surface-variant font-bold">
+											{bet.wager}
+										</td>
+										<td className="px-6 py-3.5">
+											<span
+												className={`px-1.5 py-0.5 rounded-[2px] text-[10px] font-bold border ${
+													bet.win
+														? "bg-primary/10 border-primary/20 text-primary"
+														: "bg-surface-container-highest border-outline-variant text-on-surface-variant/60"
+												}`}
+											>
+												{bet.multi}
+											</span>
+										</td>
+										<td
+											className={`px-6 py-3.5 text-right pr-6 font-bold ${
+												bet.win ? "text-primary" : "text-red-400"
 											}`}
 										>
-											{bet.multi}
-										</span>
-									</td>
-									<td
-										className={`px-6 py-3.5 text-right pr-6 font-bold ${
-											bet.win ? "text-primary" : "text-red-400"
-										}`}
-									>
-										{bet.profit}
-									</td>
-								</tr>
-							))}
+											{bet.profit}
+										</td>
+									</tr>
+								))
+							)}
 						</tbody>
 					</table>
 				</div>

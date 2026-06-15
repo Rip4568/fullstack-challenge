@@ -15,13 +15,13 @@ const BET_ID    = "bet-1";
 
 const mockGame = { id: GAME_ID, slug: "crash", name: "Crash Game", status: GameStatus.ACTIVE };
 
-const mockBettingRound  = { id: ROUND_ID, gameId: GAME_ID, status: RoundStatus.BETTING,  crashPoint: 2.5, bets: [] };
-const mockGameplayRound = { id: ROUND_ID, gameId: GAME_ID, status: RoundStatus.GAMEPLAY, crashPoint: 2.5, bets: [] };
-const mockCrashedRound  = { id: ROUND_ID, gameId: GAME_ID, status: RoundStatus.CRASHED,  crashPoint: 2.5, serverSeed: "secret", serverSeedHash: "hash" };
+const mockBettingRound  = { id: ROUND_ID, gameId: GAME_ID, status: RoundStatus.BETTING,  crashPoint: 250, bets: [] };
+const mockGameplayRound = { id: ROUND_ID, gameId: GAME_ID, status: RoundStatus.GAMEPLAY, crashPoint: 250, bets: [] };
+const mockCrashedRound  = { id: ROUND_ID, gameId: GAME_ID, status: RoundStatus.CRASHED,  crashPoint: 250, serverSeed: "secret", serverSeedHash: "hash" };
 
-const mockPendingBet   = { id: BET_ID, roundId: ROUND_ID, playerId: PLAYER_ID, username: "player", amount: 1000n, currency: "BRL", status: BetStatus.PENDING,   cashOutMultiplier: null, payoutAmount: null };
+const mockPendingBet   = { id: BET_ID, roundId: ROUND_ID, playerId: PLAYER_ID, username: "player", amount: 1000n, currency: "BRL", status: BetStatus.PENDING,   cashOutMultiplier: null, autoCashoutMultiplier: null, payoutAmount: null };
 const mockConfirmedBet = { ...mockPendingBet, status: BetStatus.CONFIRMED };
-const mockCashoutBet   = { ...mockConfirmedBet, status: BetStatus.CASHOUT, cashOutMultiplier: 1.5, payoutAmount: 1500n };
+const mockCashoutBet   = { ...mockConfirmedBet, status: BetStatus.CASHOUT, cashOutMultiplier: 150, payoutAmount: 1500n };
 
 // ─── Mock factory ─────────────────────────────────────────────────────────────
 function createPrismaMock() {
@@ -190,10 +190,10 @@ describe("GameApplicationService", () => {
 
       const bet = await service.placeBet(PLAYER_ID, "player", 1000n, "BRL", 2.5);
 
-      expect(bet.autoCashoutMultiplier).toBe(2.5);
+      expect(bet.autoCashoutMultiplier).toBe(250);
       expect(prisma.bet.create).toHaveBeenCalledWith(
         expect.objectContaining({
-          data: expect.objectContaining({ autoCashoutMultiplier: 2.5 }),
+          data: expect.objectContaining({ autoCashoutMultiplier: 250 }),
         })
       );
     });
@@ -269,7 +269,7 @@ describe("GameApplicationService", () => {
       const result = await service.cashout(PLAYER_ID, 1.5);
 
       expect(result.status).toBe(BetStatus.CASHOUT);
-      expect(result.cashOutMultiplier).toBe(1.5);
+      expect(result.cashOutMultiplier).toBe(150);
       expect(result.payoutAmount).toBe(1500n);
     });
 
@@ -408,21 +408,21 @@ describe("GameApplicationService", () => {
         amount: 2000n,
         currency: "USD",
         status: BetStatus.CONFIRMED,
-        autoCashoutMultiplier: 1.8,
+        autoCashoutMultiplier: 180,
         cashOutMultiplier: null,
         payoutAmount: null,
       };
 
       prisma.bet.findMany = mock(async () => [mockAutoBet]);
       prisma._tx.bet.findUnique = mock(async () => mockAutoBet);
-      prisma._tx.bet.update = mock(async () => ({ ...mockAutoBet, status: BetStatus.CASHOUT, cashOutMultiplier: 1.8, payoutAmount: 3600n }));
+      prisma._tx.bet.update = mock(async () => ({ ...mockAutoBet, status: BetStatus.CASHOUT, cashOutMultiplier: 180, payoutAmount: 3600n }));
 
       await service.processAutoCashout(ROUND_ID, 1.9);
 
       expect(prisma._tx.bet.update).toHaveBeenCalledWith(
         expect.objectContaining({
           where: { id: "bet-auto-1" },
-          data: expect.objectContaining({ status: BetStatus.CASHOUT, cashOutMultiplier: 1.8, payoutAmount: 3600n }),
+          data: expect.objectContaining({ status: BetStatus.CASHOUT, cashOutMultiplier: 180, payoutAmount: 3600n }),
         })
       );
 
@@ -448,7 +448,7 @@ describe("GameApplicationService", () => {
       expect(prisma.bet.findMany).toHaveBeenCalledWith(
         expect.objectContaining({
           where: expect.objectContaining({
-            autoCashoutMultiplier: expect.objectContaining({ lte: 1.5 }),
+            autoCashoutMultiplier: expect.objectContaining({ lte: 150 }),
           }),
         })
       );

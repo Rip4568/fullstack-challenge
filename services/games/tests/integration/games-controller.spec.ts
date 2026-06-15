@@ -31,7 +31,7 @@ function createServiceMock() {
     getRoundsHistory:     mock(async () => ({ items: [mockRound], total: 1 })),
     verifyRound:          mock(async () => ({ ...mockRound, status: RoundStatus.CRASHED })),
     placeBet:             mock(async () => mockBet),
-    cashout:              mock(async () => ({ ...mockBet, status: BetStatus.CASHOUT, cashOutMultiplier: 1.5, payoutAmount: 1500n })),
+    cashout:              mock(async () => ({ ...mockBet, status: BetStatus.CASHOUT, cashOutMultiplier: 150, payoutAmount: 1500n })),
     getPlayerBets:        mock(async () => ({ items: [mockBet], total: 1 })),
     ensureDefaultGameExists: mock(async () => "g1"),
   };
@@ -113,13 +113,13 @@ describe("GamesController", () => {
 
       await controller.placeBet(mockAuthedReq as any, body as any);
 
-      expect(service.placeBet).toHaveBeenCalledWith("p1", "player", 1000n, "BRL");
+      expect(service.placeBet).toHaveBeenCalledWith("p1", "player", 1000n, "BRL", null);
     });
 
     test("defaults currency to BRL when not provided in body", async () => {
       await controller.placeBet(mockAuthedReq as any, { amount: 500 } as any);
 
-      expect(service.placeBet).toHaveBeenCalledWith("p1", "player", 500n, "BRL");
+      expect(service.placeBet).toHaveBeenCalledWith("p1", "player", 500n, "BRL", null);
     });
 
     test("propagates BadRequestException when no active betting round", async () => {

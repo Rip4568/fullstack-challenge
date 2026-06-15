@@ -92,7 +92,7 @@ export class GameLoopEngine implements OnApplicationBootstrap {
         serverSeed,
         serverSeedHash,
         clientSeed,
-        crashPoint,
+        crashPoint: Math.round(crashPoint * 100),
       },
     });
 

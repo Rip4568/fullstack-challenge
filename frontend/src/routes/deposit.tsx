@@ -52,7 +52,7 @@ export function DepositPage() {
 	const [selectedNetwork, setSelectedNetwork] = useState("PIX");
 	const [isScannerOpen, setIsScannerOpen] = useState(false);
 
-	const { data: transactions = [] } = useQuery({
+	const { data: transactions = [], isLoading } = useQuery({
 		...walletTransactionsQueryOptions(),
 		enabled: state.mode === "real" && !!state.token,
 	});
@@ -109,7 +109,7 @@ export function DepositPage() {
 
 			{/* Right Panel (4 cols): Recent History */}
 			<aside className="xl:col-span-4 flex flex-col gap-6">
-				<RecentDeposits deposits={deposits} />
+				<RecentDeposits deposits={deposits} isLoading={isLoading} />
 			</aside>
 
 			<QRScannerSimulatorModal

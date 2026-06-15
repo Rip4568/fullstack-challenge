@@ -176,6 +176,43 @@ export class WalletApplicationService {
    * @param referenceType Descritor do tipo de referência (ex: "CASHOUT" ou "REFUND").
    * @param type Tipo de transação a registrar (CREDIT ou REFUND).
    */
+  async getTransactions(playerId: string, limit = 20): Promise<any[]> {
+    const wallet = await this.prisma.wallet.findUnique({
+      where: { playerId },
+      include: {
+        balances: {
+          include: {
+            transactions: {
+              orderBy: { createdAt: "desc" as const },
+              take: limit,
+            },
+          },
+        },
+      },
+    });
+
+    if (!wallet) return [];
+
+    const transactions = wallet.balances.flatMap((b: any) =>
+      b.transactions.map((tx: any) => ({
+        id: tx.id,
+        amount: Number(tx.amount),
+        type: tx.type,
+        referenceType: tx.referenceType,
+        referenceId: tx.referenceId,
+        currency: b.currency,
+        createdAt: tx.createdAt,
+      }))
+    );
+
+    return transactions
+      .sort(
+        (a: any, b: any) =>
+          new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      )
+      .slice(0, limit);
+  }
+
   async credit(
     playerId: string,
     amount: bigint,

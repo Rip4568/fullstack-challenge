@@ -10,6 +10,7 @@ export interface Bet {
 	status: "PENDING" | "CONFIRMED" | "CASHOUT" | "LOST" | "REJECTED";
 	cashOutMultiplier: number | null;
 	payoutAmount: number | null;
+	autoCashoutMultiplier?: number | null;
 }
 
 export interface Balance {

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { apiService } from "../../core/api.service";
+import { useCashout, usePlaceBet } from "../../mutations/games.mutations";
 import { mockEngine } from "../../core/mock-engine";
 import { gameStore, useGameState } from "../../core/store";
 
@@ -22,6 +22,8 @@ const formatValue = (val: number, currency: string) => {
 
 const BetPanel = () => {
 	const state = useGameState();
+	const { mutateAsync: placeBetAsync } = usePlaceBet();
+	const { mutate: cashout } = useCashout();
 
 	// Currency selector state
 	const [selectedCurrency, setSelectedCurrency] = useState("BRL");
@@ -87,31 +89,28 @@ const BetPanel = () => {
 		const autoCashoutVal =
 			Number.isNaN(numericAuto) || numericAuto <= 1.0 ? null : numericAuto;
 
+		if (state.mode === "mock") {
+			mockEngine.userPlaceBet(rawAmount, selectedCurrency, autoCashoutVal);
+			return;
+		}
+
 		try {
-			if (state.mode === "mock") {
-				mockEngine.userPlaceBet(rawAmount, selectedCurrency, autoCashoutVal);
-			} else {
-				await apiService.placeBet(rawAmount, selectedCurrency, autoCashoutVal);
-			}
-		} catch (err) {
-			console.error("Failed to place bet:", err);
-			const errorMessage =
-				err instanceof Error ? err.message : "Error placing bet";
-			gameStore.setState({ error: errorMessage });
-			// If we are in auto bet mode, cancel the loop on error (e.g. Insufficient balance)
+			await placeBetAsync({
+				amount: rawAmount,
+				currency: selectedCurrency,
+				autoCashoutMultiplier: autoCashoutVal,
+			});
+		} catch {
+			// onError in usePlaceBet already sets gameStore.error
 			setIsAutoBetActive(false);
 		}
-	}, [betAmount, selectedCurrency, autoCashout, state.mode]);
+	}, [betAmount, selectedCurrency, autoCashout, state.mode, placeBetAsync]);
 
-	const handleCashout = async () => {
-		try {
-			if (state.mode === "mock") {
-				mockEngine.userCashout(state.currentMultiplier);
-			} else {
-				await apiService.cashout(state.currentMultiplier);
-			}
-		} catch (err) {
-			console.error("Failed to cash out:", err);
+	const handleCashout = () => {
+		if (state.mode === "mock") {
+			mockEngine.userCashout(state.currentMultiplier);
+		} else {
+			cashout(state.currentMultiplier);
 		}
 	};
 

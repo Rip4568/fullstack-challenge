@@ -367,7 +367,7 @@ const CrashGraph = () => {
 								Exploded!
 							</span>
 							<span className="text-5xl md:text-7xl font-black font-mono text-red-500 tracking-tighter">
-								@ {state.crashPoint?.toFixed(2) || "1.00"}x
+								💥 {state.crashPoint?.toFixed(2) || "1.00"}x
 							</span>
 						</div>
 					)}

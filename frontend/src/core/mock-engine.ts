@@ -21,12 +21,13 @@ const MOCK_NAMES = [
 
 class MockEngine {
 	private active = false;
-	private tickInterval: any = null;
-	private bettingInterval: any = null;
+	private tickInterval: ReturnType<typeof setInterval> | undefined = undefined;
+	private bettingInterval: ReturnType<typeof setInterval> | undefined = undefined;
 
 	// Secret crash point and seeds for current round
 	private currentCrashPoint = 1.0;
 	private currentServerSeed = "";
+	private loopPromise: Promise<void> | null = null;
 
 	public start() {
 		if (this.active) return;
@@ -177,8 +178,7 @@ class MockEngine {
 				if (innerState.userBet && innerState.userBet.status === "CONFIRMED") {
 					// Auto cashout check if configured on bet (let's implement this in UI)
 					// For now, we will check if auto cashout has been triggered (if we save it in autoCashoutMultiplier)
-					const autoMultiplier = (innerState.userBet as any)
-						.autoCashoutMultiplier;
+					const autoMultiplier = innerState.userBet.autoCashoutMultiplier;
 					if (autoMultiplier && currentMultiplier >= autoMultiplier) {
 						this.userCashout(currentMultiplier);
 					}
@@ -290,12 +290,8 @@ class MockEngine {
 			status: "PENDING",
 			cashOutMultiplier: null,
 			payoutAmount: null,
+			autoCashoutMultiplier: autoCashoutMultiplier ?? null,
 		};
-
-		// Save auto cashout multiplier directly in the object for simplicity
-		if (autoCashoutMultiplier) {
-			(bet as any).autoCashoutMultiplier = autoCashoutMultiplier;
-		}
 
 		gameStore.setState({
 			userBet: bet,

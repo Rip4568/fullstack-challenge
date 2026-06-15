@@ -28,10 +28,10 @@ RUN bun install
 WORKDIR /app/frontend
 
 # Gera o routeTree antes do build (necessário no ambiente Linux)
-RUN bun --bun run generate-routes
+RUN bun run generate-routes
 
 # garante usar o runtime do bun pra buildar, evitando problemas de compatibilidade com o node
-RUN bun --bun run build
+RUN bun run build
 
 # ============================================================================
 # STAGE 2: Runtime

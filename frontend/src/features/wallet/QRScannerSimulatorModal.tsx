@@ -1,6 +1,6 @@
 import { Camera, CheckCircle, RefreshCw, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { apiService } from "../../core/api.service";
+import { useDeposit } from "../../mutations/wallet.mutations";
 
 interface QRScannerSimulatorModalProps {
 	isOpen: boolean;
@@ -18,6 +18,7 @@ const QRScannerSimulatorModal = ({
 	const [scanStep, setScanStep] = useState<
 		"scanning" | "processing" | "success"
 	>("scanning");
+	const { mutate: deposit } = useDeposit();
 
 	const closeButtonRef = useRef<HTMLButtonElement>(null);
 
@@ -64,9 +65,7 @@ const QRScannerSimulatorModal = ({
 				mockIncrement = 50000000000000000; // 0.05 ETH
 			}
 
-			apiService.deposit(selectedAsset, mockIncrement).catch((err) => {
-				console.error("Failed to deposit simulated funds:", err);
-			});
+			deposit({ currency: selectedAsset, amount: mockIncrement });
 		}, 3800);
 
 		// Auto close scanner after 5.5s

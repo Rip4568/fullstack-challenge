@@ -1,10 +1,12 @@
+import { useQuery } from "@tanstack/react-query";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { useGameState } from "../core/store";
+import { gameStore, useGameState } from "../core/store";
 import CurrencySelector from "../features/wallet/CurrencySelector";
 import DepositQRSection from "../features/wallet/DepositQRSection";
 import QRScannerSimulatorModal from "../features/wallet/QRScannerSimulatorModal";
 import RecentDeposits from "../features/wallet/RecentDeposits";
+import { walletTransactionsQueryOptions } from "../queries/wallet.queries";
 
 /*
 🎨 DESIGN COMMITMENT: JUNGLE DIGITAL
@@ -16,14 +18,55 @@ import RecentDeposits from "../features/wallet/RecentDeposits";
 */
 
 export const Route = createFileRoute("/deposit")({
+	loader: ({ context: { queryClient } }) => {
+		const { token, mode } = gameStore.getState();
+		if (token && mode === "real") {
+			return queryClient.ensureQueryData(walletTransactionsQueryOptions());
+		}
+	},
 	component: DepositPage,
 });
+
+function formatDepositAmount(amount: number, currency: string): string {
+	const abs = Math.abs(amount);
+	if (currency === "BRL") return `R$ ${(abs / 100).toFixed(2)}`;
+	if (currency === "USD") return `$${(abs / 100).toFixed(2)}`;
+	if (currency === "BTC") return `${(abs / 1e8).toFixed(5)} BTC`;
+	if (currency === "ETH") return `${(abs / 1e18).toFixed(5)} ETH`;
+	return `${abs} ${currency}`;
+}
+
+function timeAgo(date: string | Date): string {
+	const diff = Date.now() - new Date(date).getTime();
+	const mins = Math.floor(diff / 60000);
+	if (mins < 1) return "Just now";
+	if (mins < 60) return `${mins} min ago`;
+	const hrs = Math.floor(mins / 60);
+	if (hrs < 24) return `${hrs}h ago`;
+	return `${Math.floor(hrs / 24)}d ago`;
+}
 
 export function DepositPage() {
 	const state = useGameState();
 	const [selectedAsset, setSelectedAsset] = useState("BRL");
 	const [selectedNetwork, setSelectedNetwork] = useState("PIX");
 	const [isScannerOpen, setIsScannerOpen] = useState(false);
+
+	const { data: transactions = [] } = useQuery({
+		...walletTransactionsQueryOptions(),
+		enabled: state.mode === "real" && !!state.token,
+	});
+
+	const deposits = transactions
+		.filter((tx) => tx.referenceType === "SIMULATED_DEPOSIT")
+		.map((tx) => ({
+			id: tx.id,
+			amount: formatDepositAmount(tx.amount, tx.currency),
+			status: "Completed",
+			time: timeAgo(tx.createdAt),
+			currency: tx.currency,
+			hash: `${tx.referenceId.slice(0, 12)}...`,
+		}));
 
 	// Wallet address mapping
 	const addresses: Record<string, string> = {
@@ -32,42 +75,6 @@ export function DepositPage() {
 		BTC: "1A1zP1eP5QGefi2DMPTfTL5SLmv7DivfNa",
 		ETH: "0x71C7656EC7ab88b098defB751B7401B5f6d8976F",
 	};
-
-	// Recent deposits data
-	const deposits = [
-		{
-			id: "1",
-			amount: "R$ 100,00",
-			status: "Completed",
-			time: "Just now",
-			currency: "BRL",
-			hash: "pix_92kd...911",
-		},
-		{
-			id: "2",
-			amount: "0.0020 BTC",
-			status: "Completed",
-			time: "2 hours ago",
-			currency: "BTC",
-			hash: "btc_73d8...221",
-		},
-		{
-			id: "3",
-			amount: "$50.00",
-			status: "Pending",
-			time: "1 hour ago",
-			currency: "USD",
-			hash: "usdc_90a1...aa5",
-		},
-		{
-			id: "4",
-			amount: "0.0150 ETH",
-			status: "Failed",
-			time: "Yesterday",
-			currency: "ETH",
-			hash: "eth_e4c0...8b6",
-		},
-	];
 
 	return (
 		<main className="min-h-screen pt-4 pb-20 px-6 max-w-[1400px] mx-auto grid grid-cols-1 xl:grid-cols-12 gap-6 bg-jungle-glow">

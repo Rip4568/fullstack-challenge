@@ -1,5 +1,17 @@
 import { gameStore } from "./store";
 
+interface JwtPayload {
+	sub: string;
+	preferred_username?: string;
+	exp: number;
+}
+
+interface TokenResponse {
+	access_token: string;
+	refresh_token: string;
+	id_token?: string;
+}
+
 const KEYCLOAK_CLIENT_ID = "crash-game-client";
 const KEYCLOAK_BASE =
 	"http://localhost:8080/realms/crash-game/protocol/openid-connect";
@@ -128,7 +140,7 @@ class AuthService {
 		}
 	}
 
-	private decodeJwt(token: string): any {
+	private decodeJwt(token: string): JwtPayload | null {
 		try {
 			const base64Url = token.split(".")[1];
 			const base64 = base64Url.replace(/-/g, "+").replace(/_/g, "/");
@@ -138,14 +150,14 @@ class AuthService {
 					.map((c) => `%${(`00${c.charCodeAt(0).toString(16)}`).slice(-2)}`)
 					.join(""),
 			);
-			return JSON.parse(jsonPayload);
+			return JSON.parse(jsonPayload) as JwtPayload;
 		} catch (err) {
 			console.error("[AuthService] Failed to decode JWT:", err);
 			return null;
 		}
 	}
 
-	private saveTokens(tokens: any) {
+	private saveTokens(tokens: TokenResponse) {
 		const accessToken = tokens.access_token;
 		const refreshToken = tokens.refresh_token;
 		const idToken = tokens.id_token;

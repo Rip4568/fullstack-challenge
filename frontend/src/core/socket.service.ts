@@ -1,11 +1,12 @@
 import { io, type Socket } from "socket.io-client";
-import { apiService } from "./api.service";
+import { cashoutFn } from "../mutations/games.mutations";
+import { queryClient } from "../lib/queryClient";
 import type { Bet } from "./store";
 import { gameStore } from "./store";
 
 class SocketService {
 	private socket: Socket | null = null;
-	private countdownInterval: any = null;
+	private countdownInterval: ReturnType<typeof setInterval> | undefined = undefined;
 
 	public connect() {
 		if (this.socket?.connected) return;
@@ -114,12 +115,12 @@ class SocketService {
 				// Handle client-side Auto Cashout during real gameplay
 				const state = gameStore.getState();
 				if (state.userBet && state.userBet.status === "CONFIRMED") {
-					const autoMultiplier = (state.userBet as any).autoCashoutMultiplier;
+					const autoMultiplier = state.userBet.autoCashoutMultiplier;
 					if (autoMultiplier && data.currentMultiplier >= autoMultiplier) {
 						console.log(
 							`[SocketService] Auto cashout triggered at ${autoMultiplier}x`,
 						);
-						apiService.cashout(data.currentMultiplier).catch((err) => {
+						cashoutFn(data.currentMultiplier).catch((err) => {
 							console.error("[SocketService] Failed to auto cashout:", err);
 						});
 					}
@@ -170,13 +171,8 @@ class SocketService {
 					roundHistory: [historyItem, ...state.roundHistory].slice(0, 20),
 				});
 
-				// Fetch user's fresh wallet balances (takes care of updating cashout gains or debit deductions)
-				apiService.getWallet().catch((err) => {
-					console.warn(
-						"[SocketService] Failed to update wallet after crash:",
-						err,
-					);
-				});
+				// Invalidate wallet cache so __root.tsx useQuery refetches fresh balances
+				queryClient.invalidateQueries({ queryKey: ["wallet", "me"] });
 			},
 		);
 
@@ -248,7 +244,7 @@ class SocketService {
 	private clearCountdown() {
 		if (this.countdownInterval) {
 			clearInterval(this.countdownInterval);
-			this.countdownInterval = null;
+			this.countdownInterval = undefined;
 		}
 	}
 }

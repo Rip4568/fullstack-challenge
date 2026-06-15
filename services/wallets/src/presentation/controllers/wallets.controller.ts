@@ -50,6 +50,12 @@ export class WalletsController {
     return WalletResponseDto.fromEntity(wallet);
   }
 
+  @Get("transactions")
+  @UseGuards(AuthGuard)
+  async getTransactions(@Request() req: any): Promise<any[]> {
+    return this.walletService.getTransactions(req.user.id);
+  }
+
   @Post("deposit")
   @UseGuards(AuthGuard)
   async deposit(

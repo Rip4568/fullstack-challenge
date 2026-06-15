@@ -1,9 +1,9 @@
+import { TanStackDevtools } from "@tanstack/react-devtools";
 import {
+	type QueryClient,
 	QueryClientProvider,
 	useQuery,
-	type QueryClient,
 } from "@tanstack/react-query";
-import { TanStackDevtools } from "@tanstack/react-devtools";
 import {
 	createRootRouteWithContext,
 	HeadContent,
@@ -24,20 +24,25 @@ import appCss from "../styles.css?url";
 
 const THEME_INIT_SCRIPT = `(function(){try{var resolved='dark';var root=document.documentElement;root.classList.remove('light','dark');root.classList.add(resolved);root.style.colorScheme=resolved;}catch(e){}})();`;
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
-	head: () => ({
-		meta: [
-			{ charSet: "utf-8" },
-			{
-				name: "viewport",
-				content: "width=device-width, initial-scale=1.0, viewport-fit=cover",
-			},
-			{ title: "Jungle Crash | High-Stakes Gaming" },
-		],
-		links: [{ rel: "stylesheet", href: appCss }],
-	}),
-	shellComponent: RootDocument,
-});
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
+	{
+		head: () => ({
+			meta: [
+				{ charSet: "utf-8" },
+				{
+					name: "viewport",
+					content: "width=device-width, initial-scale=1.0, viewport-fit=cover",
+				},
+				{ title: "Jungle Crash | High-Stakes Gaming" },
+			],
+			links: [
+				{ rel: "stylesheet", href: appCss },
+				{ rel: "icon", href: "/icons/favicon.ico" },
+			],
+		}),
+		shellComponent: RootDocument,
+	},
+);
 
 function AppShell() {
 	const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -136,7 +141,9 @@ function AppShell() {
 
 			<TanStackDevtools
 				config={{ position: "bottom-right" }}
-				plugins={[{ name: "Tanstack Router", render: <TanStackRouterDevtoolsPanel /> }]}
+				plugins={[
+					{ name: "Tanstack Router", render: <TanStackRouterDevtoolsPanel /> },
+				]}
 			/>
 		</>
 	);

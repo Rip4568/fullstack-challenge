@@ -86,7 +86,7 @@ function AppShell() {
 			<Header />
 			<JungleBackground />
 
-			<div className="flex w-full min-h-screen pt-20">
+			<div className="relative z-10 flex w-full min-h-screen pt-20">
 				<Sidebar onDepositClick={() => {}} />
 				<div className="flex-1 lg:pl-64 w-full min-w-0 min-h-[calc(100vh-5rem)]">
 					<Outlet />

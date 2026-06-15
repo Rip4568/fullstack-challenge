@@ -46,7 +46,21 @@ export default function JungleBackground() {
 	);
 
 	return (
-		<div className="fixed inset-0 pointer-events-none select-none z-[-1] overflow-hidden">
+		<div className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden">
+			<style>{`
+				@keyframes leafSway {
+					0% { transform: rotate(-4deg); }
+					100% { transform: rotate(4deg); }
+				}
+				@keyframes palmSway {
+					0% { transform: rotate(-1.5deg); }
+					100% { transform: rotate(1.5deg); }
+				}
+				@keyframes fogPulse {
+					0% { opacity: 0.4; }
+					100% { opacity: 0.75; }
+				}
+			`}</style>
 			{/* TOP VINES LAYER */}
 			<div className="absolute top-0 left-0 w-full">
 				<svg
@@ -205,27 +219,34 @@ export default function JungleBackground() {
 							key={i}
 							transform={`translate(${leaf.x}, ${leaf.y}) rotate(${leaf.rotate}) scale(${leaf.scale})`}
 						>
-							{/* Leaf Shadow */}
-							<path
-								d="M 0 0 C -10 12 -5 28 0 35 C 5 28 10 12 0 0"
-								fill="#000000"
-								opacity="0.4"
-								transform="translate(1.5, 2)"
-							/>
-							{/* Main Leaf */}
-							<path
-								d="M 0 0 C -10 12 -5 28 0 35 C 5 28 10 12 0 0"
-								fill="url(#leaf-grad)"
-								stroke="#7dff67"
-								strokeWidth="1.2"
-							/>
-							{/* Center Vein */}
-							<path
-								d="M 0 0 L 0 25"
-								stroke="#7dff67"
-								strokeWidth="0.8"
-								opacity="0.8"
-							/>
+							<g
+								style={{
+									transformOrigin: "0px 0px",
+									animation: `leafSway ${2.5 + (i % 4) * 0.6}s ease-in-out -${(i * 0.4) % 3}s infinite alternate`,
+								}}
+							>
+								{/* Leaf Shadow */}
+								<path
+									d="M 0 0 C -10 12 -5 28 0 35 C 5 28 10 12 0 0"
+									fill="#000000"
+									opacity="0.4"
+									transform="translate(1.5, 2)"
+								/>
+								{/* Main Leaf */}
+								<path
+									d="M 0 0 C -10 12 -5 28 0 35 C 5 28 10 12 0 0"
+									fill="url(#leaf-grad)"
+									stroke="#7dff67"
+									strokeWidth="1.2"
+								/>
+								{/* Center Vein */}
+								<path
+									d="M 0 0 L 0 25"
+									stroke="#7dff67"
+									strokeWidth="0.8"
+									opacity="0.8"
+								/>
+							</g>
 						</g>
 					))}
 				</svg>
@@ -251,19 +272,28 @@ export default function JungleBackground() {
 					</defs>
 
 					{/* Neon Fog backdrop */}
-					<rect x="0" y="40" width="1440" height="240" fill="url(#neon-fog)" />
+					<rect
+						x="0"
+						y="40"
+						width="1440"
+						height="240"
+						fill="url(#neon-fog)"
+						style={{
+							animation: "fogPulse 6s ease-in-out infinite alternate",
+						}}
+					/>
 
 					{/* LAYER 1: BACK (Distant Silhouettes, Opacity 0.25) */}
 					<g fill="#041407" opacity="0.25">
 						{/* Back Canopy Base */}
 						<path d="M 0 280 L 0 200 C 150 180, 300 210, 450 190 C 600 170, 750 170, 900 190 C 1050 210, 1200 180, 1350 200 L 1440 210 L 1440 280 Z" />
 						{/* Distant Palms */}
-						<PalmTreeTemplate x={100} y={120} scale={0.9} />
-						<PalmTreeTemplate x={250} y={130} scale={0.8} />
-						<PalmTreeTemplate x={380} y={140} scale={0.75} />
-						<PalmTreeTemplate x={1060} y={140} scale={0.75} />
-						<PalmTreeTemplate x={1180} y={130} scale={0.85} />
-						<PalmTreeTemplate x={1340} y={120} scale={0.9} />
+						<PalmTreeTemplate x={100} y={120} scale={0.9} index={0} />
+						<PalmTreeTemplate x={250} y={130} scale={0.8} index={1} />
+						<PalmTreeTemplate x={380} y={140} scale={0.75} index={2} />
+						<PalmTreeTemplate x={1060} y={140} scale={0.75} index={3} />
+						<PalmTreeTemplate x={1180} y={130} scale={0.85} index={4} />
+						<PalmTreeTemplate x={1340} y={120} scale={0.9} index={5} />
 					</g>
 
 					{/* LAYER 2: MIDDLE (Midground Silhouettes, Opacity 0.55) */}
@@ -271,12 +301,12 @@ export default function JungleBackground() {
 						{/* Middle Canopy Base */}
 						<path d="M 0 280 L 0 220 C 120 200, 240 230, 360 210 C 480 190, 600 190, 720 210 C 840 230, 960 200, 1080 220 C 1200 240, 1320 210, 1440 230 L 1440 280 Z" />
 						{/* Midground Palms */}
-						<PalmTreeTemplate x={60} y={100} scale={1.05} />
-						<PalmTreeTemplate x={200} y={110} scale={0.95} />
-						<PalmTreeTemplate x={320} y={120} scale={0.85} />
-						<PalmTreeTemplate x={1120} y={120} scale={0.85} />
-						<PalmTreeTemplate x={1240} y={110} scale={1.0} />
-						<PalmTreeTemplate x={1380} y={95} scale={1.1} />
+						<PalmTreeTemplate x={60} y={100} scale={1.05} index={6} />
+						<PalmTreeTemplate x={200} y={110} scale={0.95} index={7} />
+						<PalmTreeTemplate x={320} y={120} scale={0.85} index={8} />
+						<PalmTreeTemplate x={1120} y={120} scale={0.85} index={9} />
+						<PalmTreeTemplate x={1240} y={110} scale={1.0} index={10} />
+						<PalmTreeTemplate x={1380} y={95} scale={1.1} index={11} />
 					</g>
 
 					{/* LAYER 3: FOREGROUND (Foreground Silhouettes with subtle neon glowing stroke, Opacity 0.95) */}
@@ -289,10 +319,10 @@ export default function JungleBackground() {
 						{/* Foreground Canopy Base */}
 						<path d="M 0 280 L 0 240 C 100 220, 200 250, 300 230 C 400 210, 500 210, 600 230 C 700 250, 800 250, 900 230 C 1000 210, 1100 210, 1200 230 C 1300 250, 1400 230, 1440 245 L 1440 280 Z" />
 						{/* Foreground Palms */}
-						<PalmTreeTemplate x={120} y={80} scale={1.2} />
-						<PalmTreeTemplate x={280} y={100} scale={1.0} />
-						<PalmTreeTemplate x={1160} y={100} scale={1.05} />
-						<PalmTreeTemplate x={1300} y={70} scale={1.25} />
+						<PalmTreeTemplate x={120} y={80} scale={1.2} index={12} />
+						<PalmTreeTemplate x={280} y={100} scale={1.0} index={13} />
+						<PalmTreeTemplate x={1160} y={100} scale={1.05} index={14} />
+						<PalmTreeTemplate x={1300} y={70} scale={1.25} index={15} />
 					</g>
 				</svg>
 			</div>
@@ -305,31 +335,40 @@ function PalmTreeTemplate({
 	x,
 	y,
 	scale = 1,
+	index = 0,
 }: {
 	x: number;
 	y: number;
 	scale?: number;
+	index?: number;
 }) {
 	return (
 		<g transform={`translate(${x}, ${y}) scale(${scale})`}>
-			{/* Trunk curving slightly */}
-			<path d="M -5 180 Q -15 90 0 0 Q 10 90 5 180 Z" />
-			{/* Fronds */}
-			<g>
-				{/* Top-left */}
-				<path d="M 0 0 Q -25 -25 -45 -10 Q -25 -10 0 0" />
-				{/* Mid-left */}
-				<path d="M 0 0 Q -35 -10 -55 10 Q -30 10 0 0" />
-				{/* Low-left */}
-				<path d="M 0 0 Q -30 15 -45 35 Q -20 20 0 0" />
-				{/* Top-right */}
-				<path d="M 0 0 Q 25 -25 45 -10 Q 25 -10 0 0" />
-				{/* Mid-right */}
-				<path d="M 0 0 Q 35 -10 55 10 Q 30 10 0 0" />
-				{/* Low-right */}
-				<path d="M 0 0 Q 30 15 45 35 Q 20 20 0 0" />
-				{/* Center vertical */}
-				<path d="M 0 0 Q -8 -35 0 -48 Q 8 -35 0 0" />
+			<g
+				style={{
+					transformOrigin: "0px 180px",
+					animation: `palmSway ${4.5 + (index % 4) * 0.8}s ease-in-out -${(index * 0.3) % 3}s infinite alternate`,
+				}}
+			>
+				{/* Trunk curving slightly */}
+				<path d="M -5 180 Q -15 90 0 0 Q 10 90 5 180 Z" />
+				{/* Fronds */}
+				<g>
+					{/* Top-left */}
+					<path d="M 0 0 Q -25 -25 -45 -10 Q -25 -10 0 0" />
+					{/* Mid-left */}
+					<path d="M 0 0 Q -35 -10 -55 10 Q -30 10 0 0" />
+					{/* Low-left */}
+					<path d="M 0 0 Q -30 15 -45 35 Q -20 20 0 0" />
+					{/* Top-right */}
+					<path d="M 0 0 Q 25 -25 45 -10 Q 25 -10 0 0" />
+					{/* Mid-right */}
+					<path d="M 0 0 Q 35 -10 55 10 Q 30 10 0 0" />
+					{/* Low-right */}
+					<path d="M 0 0 Q 30 15 45 35 Q 20 20 0 0" />
+					{/* Center vertical */}
+					<path d="M 0 0 Q -8 -35 0 -48 Q 8 -35 0 0" />
+				</g>
 			</g>
 		</g>
 	);

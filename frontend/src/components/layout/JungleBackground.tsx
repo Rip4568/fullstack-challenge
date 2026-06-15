@@ -253,7 +253,7 @@ export default function JungleBackground() {
 			</div>
 
 			{/* BOTTOM TREES LAYER */}
-			<div className="absolute bottom-0 left-0 w-full h-[200px] md:h-[280px]">
+			<div className="absolute bottom-0 left-0 w-full h-[120px] md:h-[180px]">
 				<svg
 					viewBox="0 0 1440 280"
 					fill="none"
@@ -286,27 +286,27 @@ export default function JungleBackground() {
 					{/* LAYER 1: BACK (Distant Silhouettes, Opacity 0.25) */}
 					<g fill="#041407" opacity="0.25">
 						{/* Back Canopy Base */}
-						<path d="M 0 280 L 0 200 C 150 180, 300 210, 450 190 C 600 170, 750 170, 900 190 C 1050 210, 1200 180, 1350 200 L 1440 210 L 1440 280 Z" />
+						<path d="M 0 280 L 0 230 C 150 220, 300 240, 450 230 C 600 220, 750 220, 900 230 C 1050 240, 1200 220, 1350 230 L 1440 235 L 1440 280 Z" />
 						{/* Distant Palms */}
-						<PalmTreeTemplate x={100} y={120} scale={0.9} index={0} />
-						<PalmTreeTemplate x={250} y={130} scale={0.8} index={1} />
-						<PalmTreeTemplate x={380} y={140} scale={0.75} index={2} />
-						<PalmTreeTemplate x={1060} y={140} scale={0.75} index={3} />
-						<PalmTreeTemplate x={1180} y={130} scale={0.85} index={4} />
-						<PalmTreeTemplate x={1340} y={120} scale={0.9} index={5} />
+						<PalmTreeTemplate x={100} y={180} scale={0.6} index={0} />
+						<PalmTreeTemplate x={250} y={190} scale={0.5} index={1} />
+						<PalmTreeTemplate x={380} y={200} scale={0.5} index={2} />
+						<PalmTreeTemplate x={1060} y={200} scale={0.5} index={3} />
+						<PalmTreeTemplate x={1180} y={190} scale={0.55} index={4} />
+						<PalmTreeTemplate x={1340} y={180} scale={0.6} index={5} />
 					</g>
 
 					{/* LAYER 2: MIDDLE (Midground Silhouettes, Opacity 0.55) */}
 					<g fill="#061d0a" opacity="0.55">
 						{/* Middle Canopy Base */}
-						<path d="M 0 280 L 0 220 C 120 200, 240 230, 360 210 C 480 190, 600 190, 720 210 C 840 230, 960 200, 1080 220 C 1200 240, 1320 210, 1440 230 L 1440 280 Z" />
+						<path d="M 0 280 L 0 245 C 120 235, 240 250, 360 240 C 480 230, 600 230, 720 240 C 840 250, 960 235, 1080 245 C 1200 255, 1320 240, 1440 250 L 1440 280 Z" />
 						{/* Midground Palms */}
-						<PalmTreeTemplate x={60} y={100} scale={1.05} index={6} />
-						<PalmTreeTemplate x={200} y={110} scale={0.95} index={7} />
-						<PalmTreeTemplate x={320} y={120} scale={0.85} index={8} />
-						<PalmTreeTemplate x={1120} y={120} scale={0.85} index={9} />
-						<PalmTreeTemplate x={1240} y={110} scale={1.0} index={10} />
-						<PalmTreeTemplate x={1380} y={95} scale={1.1} index={11} />
+						<PalmTreeTemplate x={60} y={180} scale={0.7} index={6} />
+						<PalmTreeTemplate x={200} y={190} scale={0.6} index={7} />
+						<PalmTreeTemplate x={320} y={200} scale={0.55} index={8} />
+						<PalmTreeTemplate x={1120} y={200} scale={0.55} index={9} />
+						<PalmTreeTemplate x={1240} y={190} scale={0.65} index={10} />
+						<PalmTreeTemplate x={1380} y={175} scale={0.7} index={11} />
 					</g>
 
 					{/* LAYER 3: FOREGROUND (Foreground Silhouettes with subtle neon glowing stroke, Opacity 0.95) */}
@@ -317,12 +317,12 @@ export default function JungleBackground() {
 						strokeOpacity="0.35"
 					>
 						{/* Foreground Canopy Base */}
-						<path d="M 0 280 L 0 240 C 100 220, 200 250, 300 230 C 400 210, 500 210, 600 230 C 700 250, 800 250, 900 230 C 1000 210, 1100 210, 1200 230 C 1300 250, 1400 230, 1440 245 L 1440 280 Z" />
+						<path d="M 0 280 L 0 255 C 100 245, 200 260, 300 250 C 400 240, 500 240, 600 250 C 700 260, 800 260, 900 250 C 1000 240, 1100 240, 1200 250 C 1300 260, 1400 250, 1440 260 L 1440 280 Z" />
 						{/* Foreground Palms */}
-						<PalmTreeTemplate x={120} y={80} scale={1.2} index={12} />
-						<PalmTreeTemplate x={280} y={100} scale={1.0} index={13} />
-						<PalmTreeTemplate x={1160} y={100} scale={1.05} index={14} />
-						<PalmTreeTemplate x={1300} y={70} scale={1.25} index={15} />
+						<PalmTreeTemplate x={120} y={180} scale={0.8} index={12} />
+						<PalmTreeTemplate x={280} y={200} scale={0.65} index={13} />
+						<PalmTreeTemplate x={1160} y={200} scale={0.7} index={14} />
+						<PalmTreeTemplate x={1300} y={170} scale={0.85} index={15} />
 					</g>
 				</svg>
 			</div>

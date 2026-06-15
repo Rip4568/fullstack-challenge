@@ -3,6 +3,7 @@ import { PrismaService } from "../../infrastructure/persistence/prisma.service";
 import { ProvablyFairService } from "../../domain/services/provably-fair.service";
 import { GamesGateway } from "../../infrastructure/websocket/games.gateway";
 import { RoundStatus, BetStatus, GameStatus, Prisma } from "../../infrastructure/persistence/prisma/client";
+import { GameApplicationService } from "../services/game.application-service";
 
 /**
  * Engine responsável pelo loop contínuo de rodadas do Crash Game (máquina de estados do jogo).
@@ -18,8 +19,10 @@ export class GameLoopEngine implements OnApplicationBootstrap {
   constructor(
     private readonly prisma: PrismaService,
     private readonly provablyFair: ProvablyFairService,
-    private readonly gateway: GamesGateway
+    private readonly gateway: GamesGateway,
+    private readonly gameService: GameApplicationService
   ) {}
+
 
   /**
    * Hook de inicialização do NestJS executado após a inicialização bem-sucedida do app.
@@ -140,6 +143,9 @@ export class GameLoopEngine implements OnApplicationBootstrap {
         crashed = true;
         currentMultiplier = crashPoint; // Clamp to exact crash point
       } else {
+        // Process auto-cashout for eligible bets at this multiplier
+        await this.gameService.processAutoCashout(round.id, currentMultiplier);
+
         // Broadcast tick multiplier
         this.gateway.broadcastTick(round.id, currentMultiplier, elapsedMs);
       }

@@ -1,6 +1,5 @@
 import { io, type Socket } from "socket.io-client";
 import { queryClient } from "../lib/queryClient";
-import { cashoutFn } from "../mutations/games.mutations";
 import type { Bet } from "./store";
 import { gameStore } from "./store";
 
@@ -112,20 +111,6 @@ class SocketService {
 					currentMultiplier: data.currentMultiplier,
 					elapsedMs: data.elapsedMs,
 				});
-
-				// Handle client-side Auto Cashout during real gameplay
-				const state = gameStore.getState();
-				if (state.userBet && state.userBet.status === "CONFIRMED") {
-					const autoMultiplier = state.userBet.autoCashoutMultiplier;
-					if (autoMultiplier && data.currentMultiplier >= autoMultiplier) {
-						console.log(
-							`[SocketService] Auto cashout triggered at ${autoMultiplier}x`,
-						);
-						cashoutFn(data.currentMultiplier).catch((err) => {
-							console.error("[SocketService] Failed to auto cashout:", err);
-						});
-					}
-				}
 			},
 		);
 
@@ -213,8 +198,30 @@ class SocketService {
 			}) => {
 				const state = gameStore.getState();
 
-				// Ignore if it is our own (handled locally in cashout)
-				if (data.playerId === state.playerId) return;
+				// If it is our own, update userBet and activeBets, and invalidate queries
+				if (data.playerId === state.playerId) {
+					gameStore.setState({
+						userBet: {
+							...state.userBet,
+							status: "CASHOUT" as const,
+							cashOutMultiplier: data.multiplier,
+							payoutAmount: data.payout,
+						} as any,
+						activeBets: state.activeBets.map((b) => {
+							if (b.playerId === data.playerId) {
+								return {
+									...b,
+									status: "CASHOUT" as const,
+									cashOutMultiplier: data.multiplier,
+									payoutAmount: data.payout,
+								};
+							}
+							return b;
+						}),
+					});
+					queryClient.invalidateQueries({ queryKey: ["wallet", "me"] });
+					return;
+				}
 
 				gameStore.setState({
 					activeBets: state.activeBets.map((b) => {

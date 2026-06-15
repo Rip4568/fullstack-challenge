@@ -55,18 +55,20 @@ model GameRound {
 }
 
 model Bet {
-  id                 String    @id @default(uuid())
-  roundId            String    @map("round_id")
-  playerId           String    @map("player_id")
-  username           String
-  amount             BigInt    // Valor em centavos
-  currency           String    @default("BRL")
-  status             BetStatus
-  cashOutMultiplier  Float?    @map("cashout_multiplier")
-  payoutAmount       BigInt?   @map("payout_amount")
-  createdAt          DateTime  @default(now()) @map("created_at")
-  round              GameRound @relation(fields: [roundId], references: [id])
+  id                    String    @id @default(uuid())
+  roundId               String    @map("round_id")
+  playerId              String    @map("player_id")
+  username              String
+  amount                BigInt    // Valor em centavos
+  currency              String    @default("BRL")
+  status                BetStatus
+  cashOutMultiplier     Float?    @map("cashout_multiplier")
+  autoCashoutMultiplier Float?    @map("auto_cashout_multiplier")
+  payoutAmount          BigInt?   @map("payout_amount")
+  createdAt             DateTime  @default(now()) @map("created_at")
+  round                 GameRound @relation(fields: [roundId], references: [id])
 
   @@unique([roundId, playerId]) // Limita a 1 aposta por rodada por jogador
   @@map("bets")
 }
+

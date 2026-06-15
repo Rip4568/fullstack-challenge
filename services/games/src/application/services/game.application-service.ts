@@ -2,6 +2,7 @@ import { Injectable, Inject, NotFoundException, BadRequestException } from "@nes
 import { PrismaService } from "../../infrastructure/persistence/prisma.service";
 import { ClientProxy } from "@nestjs/microservices";
 import { GameStatus, RoundStatus, BetStatus, Prisma } from "../../infrastructure/persistence/prisma/client";
+import { GamesGateway } from "../../infrastructure/websocket/games.gateway";
 
 /**
  * Serviço de aplicação encarregado de gerenciar a lógica de negócios e as regras de fluxo do Crash Game.
@@ -11,8 +12,10 @@ import { GameStatus, RoundStatus, BetStatus, Prisma } from "../../infrastructure
 export class GameApplicationService {
   constructor(
     private readonly prisma: PrismaService,
-    @Inject("WALLETS_SERVICE") private readonly walletsClient: ClientProxy
+    @Inject("WALLETS_SERVICE") private readonly walletsClient: ClientProxy,
+    private readonly gateway: GamesGateway
   ) {}
+
 
   /**
    * Garante a existência do jogo default com slug "crash".
@@ -49,7 +52,8 @@ export class GameApplicationService {
     playerId: string,
     username: string,
     amountCents: bigint,
-    currency: string = "BRL"
+    currency: string = "BRL",
+    autoCashoutMultiplier: number | null = null
   ): Promise<any> {
     const gameId = await this.ensureDefaultGameExists();
 
@@ -106,8 +110,10 @@ export class GameApplicationService {
         amount: amountCents,
         currency,
         status: BetStatus.PENDING,
+        autoCashoutMultiplier,
       },
     });
+
 
     // 5. Emit debit request to Wallet Service
     this.walletsClient.emit("wallet.debit", {
@@ -266,12 +272,84 @@ export class GameApplicationService {
       referenceType: "CASHOUT",
     });
 
+    // Broadcast cashout to all clients
+    const payoutFloat = Number(payoutAmount) / (bet.currency === "BTC" ? 100000000 : bet.currency === "ETH" ? 1000000000000000000 : 100);
+    this.gateway.broadcastBetCashout(playerId, bet.username, currentMultiplier, payoutFloat);
+
     console.log(
       `[Game Service] Cashout processed locally. Emitted wallet.credit for betId=${bet.id}, payout=${payoutAmount}`
     );
 
     return updatedBet;
   }
+
+  /**
+   * Processa o auto-cashout das apostas elegíveis na rodada atual baseado no multiplicador de tick.
+   *
+   * @param roundId Identificador da rodada em andamento.
+   * @param currentMultiplier Multiplicador atual do tick.
+   */
+  async processAutoCashout(roundId: string, currentMultiplier: number): Promise<void> {
+    const betsToCashout = await this.prisma.bet.findMany({
+      where: {
+        roundId,
+        status: BetStatus.CONFIRMED,
+        autoCashoutMultiplier: {
+          not: null,
+          lte: currentMultiplier,
+        },
+      },
+    });
+
+    for (const bet of betsToCashout) {
+      if (!bet.autoCashoutMultiplier) continue;
+
+      const targetMultiplier = bet.autoCashoutMultiplier;
+      const multiplierCents = BigInt(Math.floor(targetMultiplier * 100));
+      const payoutAmount = (bet.amount * multiplierCents) / 100n;
+
+      try {
+        await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+          const lockedBet = await tx.bet.findUnique({
+            where: { id: bet.id },
+          });
+
+          if (!lockedBet || lockedBet.status !== BetStatus.CONFIRMED) {
+            return;
+          }
+
+          await tx.bet.update({
+            where: { id: bet.id },
+            data: {
+              status: BetStatus.CASHOUT,
+              cashOutMultiplier: targetMultiplier,
+              payoutAmount: payoutAmount,
+            },
+          });
+        });
+
+        // Emit credit event to Wallet Service
+        this.walletsClient.emit("wallet.credit", {
+          betId: bet.id,
+          playerId: bet.playerId,
+          amount: payoutAmount.toString(),
+          currency: bet.currency,
+          referenceType: "CASHOUT",
+        });
+
+        // Broadcast cashout to all clients
+        const payoutFloat = Number(payoutAmount) / (bet.currency === "BTC" ? 100000000 : bet.currency === "ETH" ? 1000000000000000000 : 100);
+        this.gateway.broadcastBetCashout(bet.playerId, bet.username, targetMultiplier, payoutFloat);
+
+        console.log(
+          `[Game Service] Auto-Cashout processed for player=${bet.playerId}, betId=${bet.id}, multiplier=${targetMultiplier}x, payout=${payoutAmount}`
+        );
+      } catch (err) {
+        console.error(`[Game Service] Failed to process auto-cashout for betId=${bet.id}:`, err);
+      }
+    }
+  }
+
 
   /**
    * Confirmação callback de que o crédito de payout da aposta foi processado na Wallet Service com sucesso.

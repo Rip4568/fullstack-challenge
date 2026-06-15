@@ -77,6 +77,10 @@ Decidi seguir estritamente o que foi exigido no `README.md` técnico para garant
 6. **Healthchecks Resilientes no Docker Compose:**
    * Como a imagem base do Bun (`oven/bun:1`) é minimalista e não possui `wget` ou `curl` pré-instalados, o healthcheck padrão do docker-compose falhava, marcando as aplicações como `unhealthy`.
    * Decisão tomada: substituímos os testes por scripts de um único comando rodando no engine de JS nativo do Bun via `bun -e \"fetch('http://localhost:.../health').then(...)\"`, resolvendo o problema de forma nativa e sem inflar a imagem do contêiner.
+7. **Arquitetura de Auto-Bet (Client) vs. Auto-Cashout (Backend):**
+   * Decidimos manter a configuração e contagem de rodadas de aposta automática (Auto-Bet) no lado do cliente (frontend) e mover a validação e execução de Auto-Cashout 100% para o servidor (backend).
+   * **Justificativa do Auto-Bet no Cliente:** Se a conexão do usuário cair, o loop de apostas cessa no frontend, protegendo o saldo do usuário de continuar sendo apostado sem sua supervisão.
+   * **Justificativa do Auto-Cashout no Backend:** Em um Crash game em tempo real, a latência de rede no envio de um comando de cashout automático gerado pelo cliente (receber tick -> avaliar -> disparar POST) é arriscada (o jogo pode crashar antes da requisição chegar). Ao armazenar o `autoCashoutMultiplier` no backend na colocação da aposta, o servidor liquida o cashout de forma atômica no exato milissegundo em que o tick atinge o multiplicador, garantindo segurança e justeza mesmo que o usuário sofra uma queda de conexão.
 
 ## Possibilidade de Configuração de um Painel Admin (Ideias para o Futuro)
 

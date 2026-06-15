@@ -141,6 +141,7 @@ export class GamesController {
       req.user.username,
       BigInt(body.amount),
       body.currency || "BRL",
+      body.autoCashoutMultiplier ?? null,
     );
     return BetResponseDto.fromEntity(bet);
   }

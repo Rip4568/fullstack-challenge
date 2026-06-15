@@ -30,16 +30,26 @@ function createClientMock() {
   return { emit: mock((_event: string, _data: unknown) => {}) };
 }
 
+function createGatewayMock() {
+  return {
+    broadcastBetPlaced: mock((_playerId: string, _username: string, _amount: number) => {}),
+    broadcastBetCashout: mock((_playerId: string, _username: string, _multiplier: number, _payout: number) => {}),
+  };
+}
+
 describe("Currency Limits Unit Tests", () => {
   let service: GameApplicationService;
   let prisma: ReturnType<typeof createPrismaMock>;
   let client: ReturnType<typeof createClientMock>;
+  let gateway: ReturnType<typeof createGatewayMock>;
 
   beforeEach(() => {
     prisma = createPrismaMock();
     client = createClientMock();
-    service = new GameApplicationService(prisma as any, client as any);
+    gateway = createGatewayMock();
+    service = new GameApplicationService(prisma as any, client as any, gateway as any);
   });
+
 
   describe("BRL limits (100n to 100000n)", () => {
     const currency = "BRL";

@@ -56,17 +56,27 @@ function createClientMock() {
   return { emit: mock((_event: string, _data: unknown) => {}) };
 }
 
+function createGatewayMock() {
+  return {
+    broadcastBetPlaced: mock((_playerId: string, _username: string, _amount: number) => {}),
+    broadcastBetCashout: mock((_playerId: string, _username: string, _multiplier: number, _payout: number) => {}),
+  };
+}
+
 // ─── Tests ────────────────────────────────────────────────────────────────────
 describe("GameApplicationService", () => {
   let service: GameApplicationService;
   let prisma:  ReturnType<typeof createPrismaMock>;
   let client:  ReturnType<typeof createClientMock>;
+  let gateway: ReturnType<typeof createGatewayMock>;
 
   beforeEach(() => {
     prisma  = createPrismaMock();
     client  = createClientMock();
-    service = new GameApplicationService(prisma as any, client as any);
+    gateway = createGatewayMock();
+    service = new GameApplicationService(prisma as any, client as any, gateway as any);
   });
+
 
   // ───────────────────────────────────────────────────────────────────────────
   describe("ensureDefaultGameExists", () => {
@@ -372,4 +382,64 @@ describe("GameApplicationService", () => {
       );
     });
   });
+
+  // ───────────────────────────────────────────────────────────────────────────
+  describe("processAutoCashout", () => {
+    test("should cashout eligible bets and emit wallet.credit", async () => {
+      const mockAutoBet = {
+        id: "bet-auto-1",
+        roundId: ROUND_ID,
+        playerId: "player-auto",
+        username: "auto_user",
+        amount: 2000n,
+        currency: "USD",
+        status: BetStatus.CONFIRMED,
+        autoCashoutMultiplier: 1.8,
+        cashOutMultiplier: null,
+        payoutAmount: null,
+      };
+
+      prisma.bet.findMany = mock(async () => [mockAutoBet]);
+      prisma._tx.bet.findUnique = mock(async () => mockAutoBet);
+      prisma._tx.bet.update = mock(async () => ({ ...mockAutoBet, status: BetStatus.CASHOUT, cashOutMultiplier: 1.8, payoutAmount: 3600n }));
+
+      await service.processAutoCashout(ROUND_ID, 1.9);
+
+      expect(prisma._tx.bet.update).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: { id: "bet-auto-1" },
+          data: expect.objectContaining({ status: BetStatus.CASHOUT, cashOutMultiplier: 1.8, payoutAmount: 3600n }),
+        })
+      );
+
+      expect(client.emit).toHaveBeenCalledWith(
+        "wallet.credit",
+        expect.objectContaining({ betId: "bet-auto-1", playerId: "player-auto", amount: "3600", currency: "USD" })
+      );
+
+      expect(gateway.broadcastBetCashout).toHaveBeenCalledWith(
+        "player-auto",
+        "auto_user",
+        1.8,
+        36.0
+      );
+    });
+
+    test("should ignore bets with target multiplier above current multiplier", async () => {
+      prisma.bet.findMany = mock(async () => []);
+      prisma._tx.bet.update = mock(async () => ({} as any));
+
+      await service.processAutoCashout(ROUND_ID, 1.5);
+
+      expect(prisma.bet.findMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            autoCashoutMultiplier: expect.objectContaining({ lte: 1.5 }),
+          }),
+        })
+      );
+      expect(prisma._tx.bet.update).not.toHaveBeenCalled();
+    });
+  });
 });
+

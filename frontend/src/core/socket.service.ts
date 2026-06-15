@@ -1,12 +1,13 @@
 import { io, type Socket } from "socket.io-client";
-import { cashoutFn } from "../mutations/games.mutations";
 import { queryClient } from "../lib/queryClient";
+import { cashoutFn } from "../mutations/games.mutations";
 import type { Bet } from "./store";
 import { gameStore } from "./store";
 
 class SocketService {
 	private socket: Socket | null = null;
-	private countdownInterval: ReturnType<typeof setInterval> | undefined = undefined;
+	private countdownInterval: ReturnType<typeof setInterval> | undefined =
+		undefined;
 
 	public connect() {
 		if (this.socket?.connected) return;

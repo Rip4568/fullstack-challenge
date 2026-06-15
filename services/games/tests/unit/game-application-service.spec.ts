@@ -143,6 +143,36 @@ describe("GameApplicationService", () => {
         "Player has already placed a bet in this round"
       );
     });
+
+    test("enforces cryptocurrency specific limits (BTC and ETH)", async () => {
+      // BTC boundaries: min 1000n, max 10000000000n
+      prisma.bet.findUnique = mock(async () => null);
+      await expect(service.placeBet(PLAYER_ID, "player", 999n, "BTC")).rejects.toThrow(
+        "Bet amount must be between 1.00 and 1,000.00"
+      );
+
+      prisma.bet.findUnique = mock(async () => null);
+      await expect(service.placeBet(PLAYER_ID, "player", 10000000001n, "BTC")).rejects.toThrow(
+        "Bet amount must be between 1.00 and 1,000.00"
+      );
+
+      prisma.bet.findUnique = mock(async () => null);
+      await expect(service.placeBet(PLAYER_ID, "player", 1000n, "BTC")).resolves.toBeDefined();
+
+      // ETH boundaries: min 10000000000000n, max 100000000000000000000n
+      prisma.bet.findUnique = mock(async () => null);
+      await expect(service.placeBet(PLAYER_ID, "player", 9999999999999n, "ETH")).rejects.toThrow(
+        "Bet amount must be between 1.00 and 1,000.00"
+      );
+
+      prisma.bet.findUnique = mock(async () => null);
+      await expect(service.placeBet(PLAYER_ID, "player", 100000000000000000001n, "ETH")).rejects.toThrow(
+        "Bet amount must be between 1.00 and 1,000.00"
+      );
+
+      prisma.bet.findUnique = mock(async () => null);
+      await expect(service.placeBet(PLAYER_ID, "player", 10000000000000n, "ETH")).resolves.toBeDefined();
+    });
   });
 
   // ───────────────────────────────────────────────────────────────────────────

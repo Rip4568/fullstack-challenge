@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { useCashout, usePlaceBet } from "../../mutations/games.mutations";
 import { mockEngine } from "../../core/mock-engine";
 import { gameStore, useGameState } from "../../core/store";
+import { useCashout, usePlaceBet } from "../../mutations/games.mutations";
 
 // Convert display unit betAmount to raw integer value
 const getRawAmount = (amountStr: string, currency: string): number => {

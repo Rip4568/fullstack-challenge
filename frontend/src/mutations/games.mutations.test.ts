@@ -26,15 +26,21 @@ vi.mock("../core/store", () => ({
 	},
 }));
 
-import { cashoutFn } from "./games.mutations";
 import { apiClient } from "../core/apiClient";
 import { gameStore } from "../core/store";
+import { cashoutFn } from "./games.mutations";
 
 // ─── Fixtures ─────────────────────────────────────────────────────────────────
 const mockBet = {
-	id: "bet-1", roundId: "round-1", playerId: "player-1", username: "player",
-	amount: 1000, currency: "BRL", status: "CASHOUT" as const,
-	cashOutMultiplier: 1.5, payoutAmount: 1500,
+	id: "bet-1",
+	roundId: "round-1",
+	playerId: "player-1",
+	username: "player",
+	amount: 1000,
+	currency: "BRL",
+	status: "CASHOUT" as const,
+	cashOutMultiplier: 1.5,
+	payoutAmount: 1500,
 };
 
 // ─── cashoutFn() ──────────────────────────────────────────────────────────────
@@ -52,7 +58,9 @@ describe("cashoutFn()", () => {
 
 		await cashoutFn(1.5);
 
-		expect(apiClient.post).toHaveBeenCalledWith("/games/bet/cashout", { multiplier: 1.5 });
+		expect(apiClient.post).toHaveBeenCalledWith("/games/bet/cashout", {
+			multiplier: 1.5,
+		});
 	});
 
 	it("calls gameStore.setState with the returned bet as userBet", async () => {
@@ -61,7 +69,7 @@ describe("cashoutFn()", () => {
 		await cashoutFn(1.5);
 
 		expect(gameStore.setState).toHaveBeenCalledWith(
-			expect.objectContaining({ userBet: mockBet })
+			expect.objectContaining({ userBet: mockBet }),
 		);
 	});
 
@@ -70,7 +78,9 @@ describe("cashoutFn()", () => {
 
 		await cashoutFn(1.5);
 
-		const call = vi.mocked(gameStore.setState).mock.calls[0][0] as { activeBets: unknown[] };
+		const call = vi.mocked(gameStore.setState).mock.calls[0][0] as {
+			activeBets: unknown[];
+		};
 		expect(call.activeBets[0]).toEqual(mockBet);
 	});
 
@@ -93,6 +103,8 @@ describe("cashoutFn()", () => {
 
 		await cashoutFn(1.0);
 
-		expect(apiClient.post).toHaveBeenCalledWith("/games/bet/cashout", { multiplier: 1.0 });
+		expect(apiClient.post).toHaveBeenCalledWith("/games/bet/cashout", {
+			multiplier: 1.0,
+		});
 	});
 });

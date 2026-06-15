@@ -18,7 +18,7 @@ function makeJwt(payload: Record<string, unknown>): string {
 			.replace(/\+/g, "-")
 			.replace(/\//g, "_");
 	const header = encode({ alg: "RS256", typ: "JWT" });
-	const body   = encode(payload);
+	const body = encode(payload);
 	return `${header}.${body}.fake_signature`;
 }
 
@@ -26,7 +26,12 @@ function makeJwt(payload: Record<string, unknown>): string {
 describe("AuthService", () => {
 	beforeEach(() => {
 		window.localStorage.clear();
-		gameStore.setState({ token: null, username: null, playerId: null, balances: [] });
+		gameStore.setState({
+			token: null,
+			username: null,
+			playerId: null,
+			balances: [],
+		});
 	});
 
 	// ─── checkLocalSession() ─────────────────────────────────────────────────
@@ -111,7 +116,14 @@ describe("AuthService", () => {
 				token: "tok",
 				username: "player",
 				playerId: "p1",
-				balances: [{ currency: "BRL", amount: 1000, amountFormatted: 10, estimatedUsdValue: 1.8 }],
+				balances: [
+					{
+						currency: "BRL",
+						amount: 1000,
+						amountFormatted: 10,
+						estimatedUsdValue: 1.8,
+					},
+				],
 			});
 
 			authService.clearSession();

@@ -34,8 +34,9 @@ export const walletTransactionsQueryOptions = () =>
 	queryOptions({
 		queryKey: ["wallet", "transactions"],
 		queryFn: async () => {
-			const { data } =
-				await apiClient.get<TransactionItem[]>("/wallets/transactions");
+			const { data } = await apiClient.get<TransactionItem[]>(
+				"/wallets/transactions",
+			);
 			return data;
 		},
 		staleTime: 60_000,

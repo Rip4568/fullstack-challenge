@@ -7,10 +7,11 @@
  *
  * Uses renderHook + QueryClientProvider to exercise the full hook lifecycle.
  */
-import { beforeEach, describe, expect, it, vi } from "vitest";
-import { renderHook, act } from "@testing-library/react";
+
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { act, renderHook } from "@testing-library/react";
 import React from "react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../core/apiClient", () => ({
 	apiClient: { post: vi.fn() },
@@ -18,7 +19,14 @@ vi.mock("../core/apiClient", () => ({
 }));
 
 let mockMode: "mock" | "real" = "real";
-const mockBalances = [{ currency: "BRL", amount: 10000, amountFormatted: 100, estimatedUsdValue: 18 }];
+const mockBalances = [
+	{
+		currency: "BRL",
+		amount: 10000,
+		amountFormatted: 100,
+		estimatedUsdValue: 18,
+	},
+];
 
 vi.mock("../core/store", () => ({
 	gameStore: {
@@ -28,13 +36,15 @@ vi.mock("../core/store", () => ({
 	},
 }));
 
-import { useDeposit } from "./wallet.mutations";
 import { apiClient } from "../core/apiClient";
 import { gameStore } from "../core/store";
+import { useDeposit } from "./wallet.mutations";
 
 // ─── Test wrapper ─────────────────────────────────────────────────────────────
 function wrapper({ children }: { children: React.ReactNode }) {
-	const qc = new QueryClient({ defaultOptions: { mutations: { retry: false } } });
+	const qc = new QueryClient({
+		defaultOptions: { mutations: { retry: false } },
+	});
 	return React.createElement(QueryClientProvider, { client: qc }, children);
 }
 
@@ -42,7 +52,14 @@ function wrapper({ children }: { children: React.ReactNode }) {
 const mockWalletResponse = {
 	id: "w1",
 	playerId: "p1",
-	balances: [{ currency: "BRL", amount: 15000, amountFormatted: 150, estimatedUsdValue: 27 }],
+	balances: [
+		{
+			currency: "BRL",
+			amount: 15000,
+			amountFormatted: 150,
+			estimatedUsdValue: 27,
+		},
+	],
 };
 
 // ─── useDeposit() ─────────────────────────────────────────────────────────────
@@ -50,7 +67,10 @@ describe("useDeposit()", () => {
 	beforeEach(() => {
 		vi.clearAllMocks();
 		mockMode = "real";
-		vi.mocked(gameStore.getState).mockImplementation(() => ({ mode: mockMode, balances: mockBalances }));
+		vi.mocked(gameStore.getState).mockImplementation(() => ({
+			mode: mockMode,
+			balances: mockBalances,
+		}));
 	});
 
 	// Real mode ────────────────────────────────────────────────────────────────
@@ -79,7 +99,7 @@ describe("useDeposit()", () => {
 		});
 
 		expect(gameStore.setState).toHaveBeenCalledWith(
-			expect.objectContaining({ balances: mockWalletResponse.balances })
+			expect.objectContaining({ balances: mockWalletResponse.balances }),
 		);
 	});
 
@@ -90,7 +110,10 @@ describe("useDeposit()", () => {
 
 		let returnValue: unknown;
 		await act(async () => {
-			returnValue = await result.current.mutateAsync({ currency: "USD", amount: 1000 });
+			returnValue = await result.current.mutateAsync({
+				currency: "USD",
+				amount: 1000,
+			});
 		});
 
 		expect(returnValue).toEqual(mockWalletResponse);
@@ -99,7 +122,10 @@ describe("useDeposit()", () => {
 	// Mock mode ────────────────────────────────────────────────────────────────
 	it("bypasses API and calls updateBalance directly in mock mode", async () => {
 		mockMode = "mock";
-		vi.mocked(gameStore.getState).mockReturnValue({ mode: "mock", balances: mockBalances });
+		vi.mocked(gameStore.getState).mockReturnValue({
+			mode: "mock",
+			balances: mockBalances,
+		});
 
 		const { result } = renderHook(() => useDeposit(), { wrapper });
 
@@ -113,13 +139,19 @@ describe("useDeposit()", () => {
 
 	it("returns undefined in mock mode (no API response to return)", async () => {
 		mockMode = "mock";
-		vi.mocked(gameStore.getState).mockReturnValue({ mode: "mock", balances: mockBalances });
+		vi.mocked(gameStore.getState).mockReturnValue({
+			mode: "mock",
+			balances: mockBalances,
+		});
 
 		const { result } = renderHook(() => useDeposit(), { wrapper });
 
 		let returnValue: unknown = "not-undefined";
 		await act(async () => {
-			returnValue = await result.current.mutateAsync({ currency: "USD", amount: 500 });
+			returnValue = await result.current.mutateAsync({
+				currency: "USD",
+				amount: 500,
+			});
 		});
 
 		expect(returnValue).toBeUndefined();
@@ -127,7 +159,10 @@ describe("useDeposit()", () => {
 
 	it("does not call gameStore.setState in mock mode (balance updated via updateBalance)", async () => {
 		mockMode = "mock";
-		vi.mocked(gameStore.getState).mockReturnValue({ mode: "mock", balances: mockBalances });
+		vi.mocked(gameStore.getState).mockReturnValue({
+			mode: "mock",
+			balances: mockBalances,
+		});
 
 		const { result } = renderHook(() => useDeposit(), { wrapper });
 
@@ -147,9 +182,15 @@ describe("useDeposit()", () => {
 			await act(async () => {
 				await result.current.mutateAsync({ currency, amount: 1000 });
 			});
-			expect(apiClient.post).toHaveBeenCalledWith("/wallets/deposit", { amount: "1000", currency });
+			expect(apiClient.post).toHaveBeenCalledWith("/wallets/deposit", {
+				amount: "1000",
+				currency,
+			});
 			vi.clearAllMocks();
-			vi.mocked(gameStore.getState).mockImplementation(() => ({ mode: "real", balances: mockBalances }));
+			vi.mocked(gameStore.getState).mockImplementation(() => ({
+				mode: "real",
+				balances: mockBalances,
+			}));
 		}
 	});
 });

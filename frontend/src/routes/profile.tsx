@@ -100,7 +100,9 @@ export function ProfilePage() {
 
 	// Get active currency stats
 	const activeCurrency = state.balances[0]?.currency || "BRL";
-	const activeBalance = state.balances.find((b) => b.currency === activeCurrency);
+	const activeBalance = state.balances.find(
+		(b) => b.currency === activeCurrency,
+	);
 	const activeBalanceAmount = activeBalance ? activeBalance.amountFormatted : 0;
 	const estimatedUsdValue = activeBalance ? activeBalance.estimatedUsdValue : 0;
 

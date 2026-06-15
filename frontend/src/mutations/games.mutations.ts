@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient, parseApiError } from "../core/apiClient";
-import { gameStore } from "../core/store";
 import type { Bet } from "../core/store";
+import { gameStore } from "../core/store";
 
 // Plain async function — usável em contextos não-React (socket.service.ts)
 export async function cashoutFn(multiplier: number): Promise<Bet> {
@@ -63,7 +63,10 @@ export function useCashout() {
 			queryClient.invalidateQueries({ queryKey: ["wallet", "me"] });
 		},
 		onError: (err) => {
-			console.error("[useCashout]", parseApiError(err, "Failed to cashout").message);
+			console.error(
+				"[useCashout]",
+				parseApiError(err, "Failed to cashout").message,
+			);
 		},
 	});
 }

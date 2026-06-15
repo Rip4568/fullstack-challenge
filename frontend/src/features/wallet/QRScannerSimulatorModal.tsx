@@ -78,7 +78,7 @@ const QRScannerSimulatorModal = ({
 			clearTimeout(sTimer);
 			clearTimeout(cTimer);
 		};
-	}, [isOpen, selectedAsset, onClose]);
+	}, [isOpen, selectedAsset, onClose, deposit]);
 
 	if (!isOpen) return null;
 

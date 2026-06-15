@@ -22,12 +22,12 @@ const MOCK_NAMES = [
 class MockEngine {
 	private active = false;
 	private tickInterval: ReturnType<typeof setInterval> | undefined = undefined;
-	private bettingInterval: ReturnType<typeof setInterval> | undefined = undefined;
+	private bettingInterval: ReturnType<typeof setInterval> | undefined =
+		undefined;
 
 	// Secret crash point and seeds for current round
 	private currentCrashPoint = 1.0;
 	private currentServerSeed = "";
-	private loopPromise: Promise<void> | null = null;
 
 	public start() {
 		if (this.active) return;
